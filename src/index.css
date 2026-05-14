@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  --primary: #9e3322;
+  --primary-hover: #8b2b1c;
+  --text-dark: #2c2523;
+  --text-light: #6e645f;
+  --bg-main: #f9f8f6;
+  --bg-white: #ffffff;
+  --border-light: #eae3db;
+  
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-dark);
+  background-color: var(--bg-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Header styles moved to src/components/Header.css */
+
+
+/* Footer */
+.footer {
+  background-color: var(--bg-main);
+  padding: 5rem 0 2rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+.footer-logo {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.05em;
+}
+
+.footer-desc {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.7;
+  padding-right: 2rem;
+}
+
+.footer h4 {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 1rem;
+}
+
+.footer-links a {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.footer-links a:hover, .footer-links a.active {
+  color: var(--primary);
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-icons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e5ded8;
+  color: var(--text-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.social-icons a:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--border-light);
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* Responsive globals */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}

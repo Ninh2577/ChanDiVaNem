@@ -1,0 +1,456 @@
+/* Scoped specific classes from the original index.css for the Home page */
+
+.home-page .section-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.home-page .section-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.home-page .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.home-page .btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.home-page .link-primary {
+  color: var(--primary);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.home-page .link-primary:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+/* Hero Section */
+.home-page .hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  padding-top: 80px;
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+.home-page .hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 100%);
+  z-index: 1;
+}
+
+.home-page .hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+}
+
+.home-page .hero-tag {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.home-page .hero h1 {
+  font-size: 4rem;
+  line-height: 1.1;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.home-page .hero p {
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+/* About Section */
+.home-page .about {
+  padding: 6rem 0;
+  background-color: var(--bg-main);
+}
+
+.home-page .about .container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.home-page .about-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.home-page .about-text p {
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+}
+
+.home-page .about-image {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.12);
+  cursor: pointer;
+  display: block; /* làm wrapper thành block để Link bao ngoài hoạt động đúng */
+}
+
+.home-page .about-image img {
+  width: 100%;
+  height: auto;
+  min-height: 340px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.home-page .about-image:hover img {
+  transform: scale(1.05);
+}
+
+/* Overlay gradient xuất hiện khi hover */
+.home-page .about-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20, 10, 5, 0.72) 0%, rgba(0,0,0,0) 55%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+  border-radius: 16px;
+}
+
+.home-page .about-image:hover::before {
+  opacity: 1;
+}
+
+/* Text hiện khi hover — quote text nhỏ mờ, elegant */
+.home-page .about-hover-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem 1.75rem;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+}
+
+.home-page .about-image:hover .about-hover-text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.home-page .about-hover-text p {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.6;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.home-page .about-hover-text span {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  font-family: var(--font-sans);
+  font-style: normal;
+}
+
+/* Destinations Section */
+.home-page .destinations {
+  padding: 6rem 0;
+  background-color: var(--bg-white);
+}
+
+.home-page .destinations-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.home-page .dest-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.home-page .dest-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+
+.home-page .dest-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.home-page .dest-card.large {
+  height: 100%;
+  min-height: 500px;
+}
+
+.home-page .dest-card.small {
+  height: calc(50% - 0.75rem);
+  min-height: 240px;
+}
+
+.home-page .dest-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 60%);
+}
+
+.home-page .dest-card:hover img {
+  transform: scale(1.05);
+}
+
+.home-page .dest-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem;
+  z-index: 2;
+  color: white;
+}
+
+.home-page .dest-content .tag {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.home-page .dest-content h3 {
+  color: white;
+  font-size: 1.75rem;
+  margin: 0;
+}
+
+/* Foods Section */
+.home-page .foods {
+  padding: 6rem 0;
+  background-color: var(--bg-main);
+  text-align: center;
+}
+
+.home-page .foods-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 3rem;
+  text-align: left;
+}
+
+.home-page .food-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-page .food-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.home-page .food-img-wrapper {
+  position: relative;
+  height: 250px;
+}
+
+.home-page .food-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-page .food-tag {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(255,255,255,0.9);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.home-page .food-info {
+  padding: 1.5rem;
+}
+
+.home-page .food-info h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.home-page .food-info p {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Culture Section */
+.home-page .culture {
+  padding: 6rem 0;
+  background-color: var(--bg-white);
+}
+
+.home-page .culture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3rem;
+}
+
+.home-page .culture-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.home-page .culture-card {
+  display: flex;
+  background: var(--bg-main);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.home-page .culture-card:hover {
+  transform: translateY(-5px);
+}
+
+.home-page .culture-img {
+  width: 40%;
+  min-height: 250px;
+}
+
+.home-page .culture-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-page .culture-info {
+  width: 60%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.home-page .culture-tag {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.home-page .culture-info h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.home-page .culture-info p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.home-page .culture-date {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: auto;
+}
+
+@media (max-width: 992px) {
+  .home-page .hero h1 { font-size: 3rem; }
+  .home-page .about .container, .home-page .destinations-grid, .home-page .culture-grid {
+    grid-template-columns: 1fr;
+  }
+  .home-page .about-image {
+    border-radius: 12px;
+  }
+  .home-page .dest-right-col {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-page .foods-grid { grid-template-columns: 1fr; }
+  .home-page .dest-right-col { flex-direction: column; }
+  .home-page .culture-card { flex-direction: column; }
+  .home-page .culture-img { width: 100%; height: 200px; }
+  .home-page .culture-info { width: 100%; }
+}

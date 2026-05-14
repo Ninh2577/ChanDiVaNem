@@ -1,0 +1,359 @@
+/* Culture Page specific components */
+
+/* Hero Section */
+.culture-page .hero {
+  position: relative;
+  height: 80vh;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+.culture-page .hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+  z-index: 1;
+}
+
+.culture-page .hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  padding: 0 1rem;
+  margin-top: 4rem;
+}
+
+.culture-page .hero-tag {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding: 0.5rem 1.2rem;
+  border-radius: 99px;
+  margin-bottom: 1.5rem;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(4px);
+}
+
+.culture-page .hero h1 {
+  font-size: 4.5rem;
+  line-height: 1.1;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+
+.culture-page .hero p {
+  font-size: 1.1rem;
+  font-style: italic;
+  font-family: var(--font-serif);
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Festivals Section */
+.culture-page .festivals {
+  padding: 6rem 0;
+}
+
+.culture-page .section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3.5rem;
+}
+
+.culture-page .section-header-row h2 {
+  font-size: 2.2rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.culture-page .subtitle-text {
+  color: var(--text-light);
+  max-width: 500px;
+  font-size: 0.95rem;
+}
+
+.culture-page .slider-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.culture-page .slider-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.culture-page .slider-btn.prev {
+  background-color: var(--bg-white);
+  color: var(--primary);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.culture-page .slider-btn.next {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(158,51,34,0.3);
+}
+
+.culture-page .slider-btn:hover {
+  transform: scale(1.05);
+}
+
+.culture-page .festivals-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.culture-page .festival-card {
+  background: var(--bg-white);
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.culture-page .festival-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.culture-page .fest-num {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.culture-page .festival-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.culture-page .festival-card p {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.culture-page .location-link {
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Villages Section */
+.culture-page .villages {
+  padding: 4rem 0 6rem;
+}
+
+.culture-page .villages-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.culture-page .village-image {
+  position: relative;
+  padding-right: 2rem;
+  padding-bottom: 2rem;
+}
+
+.culture-page .village-image::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 90%;
+  height: 90%;
+  background-color: #e5ded8;
+  border-radius: 16px;
+  z-index: 1;
+}
+
+.culture-page .village-image img {
+  position: relative;
+  z-index: 2;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  width: 100%;
+  height: 550px;
+  object-fit: cover;
+}
+
+.culture-page .section-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.culture-page .village-content h2 {
+  font-size: 3.5rem;
+  color: var(--primary);
+  line-height: 1.1;
+  margin-bottom: 3.5rem;
+}
+
+.culture-page .village-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.culture-page .village-item {
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.culture-page .village-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  width: 1.2rem;
+  height: 2px;
+  background-color: var(--primary);
+}
+
+.culture-page .village-item h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  color: var(--text-dark);
+}
+
+.culture-page .village-item p {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* People & Life Section */
+.culture-page .people-life {
+  padding: 6rem 0;
+  background-color: var(--bg-main);
+}
+
+.culture-page .text-center {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.culture-page .text-center h2 {
+  font-size: 2.8rem;
+  color: var(--primary);
+  display: inline-block;
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.culture-page .text-center h2::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background-color: var(--primary);
+}
+
+.culture-page .quote-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-top: 2rem;
+}
+
+.culture-page .gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.culture-page .gallery-main img {
+  width: 100%;
+  height: 650px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.culture-page .gallery-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.culture-page .gallery-top img {
+  width: 100%;
+  height: 317px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.culture-page .gallery-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  height: 317px;
+}
+
+.culture-page .gallery-bottom img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+
+
+@media (max-width: 1024px) {
+  .culture-page .festivals-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+  .culture-page .villages-grid { gap: 3rem; }
+  .culture-page .village-content h2 { font-size: 2.8rem; }
+}
+
+@media (max-width: 768px) {
+  .culture-page .hero h1 { font-size: 3rem; }
+  .culture-page .festivals-grid, .culture-page .villages-grid, .culture-page .gallery-grid { grid-template-columns: 1fr; }
+  .culture-page .village-image { padding-right: 1rem; padding-bottom: 1rem; }
+  .culture-page .gallery-main img { height: 400px; }
+  .culture-page .section-header-row { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  .culture-page .gallery-bottom { grid-template-columns: 1fr; height: auto; }
+  .culture-page .gallery-bottom img { height: 250px; }
+  .culture-page .text-center h2 { font-size: 2.2rem; }
+}

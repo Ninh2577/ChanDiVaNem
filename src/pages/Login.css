@@ -1,0 +1,259 @@
+.login-page {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  background-color: white;
+  font-family: var(--font-sans);
+}
+
+.login-split {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* Left Brand Side */
+.login-brand {
+  flex: 1;
+  background-image: url('https://images.unsplash.com/photo-1542013897-40da8bc3257a?auto=format&fit=crop&q=80&w=1200');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: none; /* Mobile default */
+}
+
+@media (min-width: 900px) {
+  .login-brand {
+    display: block;
+  }
+}
+
+.brand-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(15,23,42,0.4), rgba(15,23,42,0.9));
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.brand-logo {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.brand-text h2 {
+  font-size: 3rem;
+  color: white;
+  margin-bottom: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.brand-text p {
+  font-size: 1.2rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
+.brand-footer p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+/* Right Form Side */
+.login-form-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: white;
+}
+
+.login-form-box {
+  width: 100%;
+  max-width: 450px;
+}
+
+.form-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.form-header h3 {
+  font-size: 2.2rem;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.form-header p {
+  color: #64748b;
+  font-size: 1.05rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.auth-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+.label-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.label-flex label {
+  margin-bottom: 0;
+}
+
+.forgot-link {
+  font-size: 0.85rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  color: #94a3b8;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input-with-icon input:focus {
+  background-color: white;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(158,51,34,0.1);
+}
+
+.auth-options {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.checkbox-label input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+}
+
+.btn-login {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+  margin-top: 1rem;
+}
+
+.btn-login:hover {
+  background-color: var(--primary-hover);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 2.5rem 0;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #e2e8f0;
+}
+
+.auth-divider span {
+  padding: 0 1rem;
+}
+
+.auth-footer {
+  text-align: center;
+}
+
+.auth-footer p {
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+
+.apply-now-link {
+  display: inline-block;
+  color: #0f172a;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid #cbd5e1;
+  padding: 0.8rem 1.5rem;
+  border-radius: 99px;
+  transition: all 0.2s;
+}
+
+.apply-now-link:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}

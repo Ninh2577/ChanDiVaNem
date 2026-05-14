@@ -1,0 +1,17 @@
+/* Re-use AdminLayout structure but override colors for CTV */
+@import './AdminLayout.css';
+
+.ctv-sidebar {
+  background-color: #064e3b; /* emerald-900 instead of slate-800 */
+}
+
+.ctv-sidebar .admin-nav-link.active {
+  background-color: #10b981; /* emerald-500 */
+}
+
+.ctv-welcome h3 {
+  font-size: 1.1rem;
+  color: #0f172a;
+  margin: 0;
+  font-weight: 600;
+}

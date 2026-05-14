@@ -1,0 +1,390 @@
+.cuisine-page {
+  background-color: var(--bg-main);
+}
+
+/* Hero Section */
+.cuisine-page .cuisine-hero {
+  position: relative;
+  height: 85vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+}
+
+.cuisine-page .cuisine-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 100%);
+}
+
+.cuisine-page .cuisine-hero-card {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 3rem;
+  border-radius: 16px;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.cuisine-page .cuisine-hero-card h1 {
+  font-size: 3rem;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  color: var(--text-dark);
+}
+
+.cuisine-page .cuisine-hero-card p {
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Categories */
+.cuisine-page .cuisine-categories {
+  padding: 4rem 0 2rem;
+  margin-top: -6rem; /* Pull up over the hero slightly */
+  position: relative;
+  z-index: 3;
+}
+
+.cuisine-page .cat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.cuisine-page .cat-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 280px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.cuisine-page .cat-card:hover {
+  transform: translateY(-10px);
+}
+
+.cuisine-page .cat-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.cuisine-page .cat-card:hover img {
+  transform: scale(1.05);
+}
+
+.cuisine-page .cat-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  color: white;
+}
+
+.cuisine-page .cat-overlay h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.3rem;
+  color: white;
+}
+
+.cuisine-page .cat-overlay p {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  font-family: var(--font-sans);
+}
+
+/* Featured Dishes (Zig-zag) */
+.cuisine-page .featured-dishes {
+  padding: 5rem 0;
+}
+
+.cuisine-page .dish-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  margin-bottom: 6rem;
+}
+
+.cuisine-page .dish-row:last-child {
+  margin-bottom: 0;
+}
+
+.cuisine-page .dish-image {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.cuisine-page .dish-image img {
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+}
+
+.cuisine-page .dish-content h2 {
+  font-size: 2.5rem;
+  color: var(--primary);
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.cuisine-page .dish-content p {
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+}
+
+.cuisine-page .location-box {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  border: 1px solid var(--border-light);
+}
+
+.cuisine-page .loc-title {
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cuisine-page .location-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Experience Section (Bento Grid) */
+.cuisine-page .experience-section {
+  padding: 4rem 0 6rem;
+}
+
+.cuisine-page .text-center {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.cuisine-page .text-center h2 {
+  font-size: 2.5rem;
+  margin-top: 0.5rem;
+}
+
+.cuisine-page .bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  grid-auto-rows: minmax(280px, auto);
+}
+
+.cuisine-page .bento-card {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.cuisine-page .bento-large-tl {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.cuisine-page .bento-large-tl img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.cuisine-page .bento-overlay {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+  padding: 2.5rem;
+  margin-top: auto;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.cuisine-page .bento-overlay h3 {
+  color: white;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.cuisine-page .bento-overlay p {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  max-width: 400px;
+  opacity: 0.9;
+}
+
+.cuisine-page .btn-white {
+  background: white;
+  color: var(--text-dark);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 99px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cuisine-page .btn-white:hover {
+  transform: translateY(-2px);
+}
+
+.cuisine-page .bento-small-tr {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.cuisine-page .bento-small-bl {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.cuisine-page .bento-large-br {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.cuisine-page .bento-light {
+  background: #fdfbf8;
+  border: 1px solid var(--border-light);
+}
+
+.cuisine-page .bento-brown {
+  background: #933c27;
+  color: white;
+}
+
+.cuisine-page .bento-green {
+  background: #475f3a;
+  color: white;
+}
+
+.cuisine-page .bento-content {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cuisine-page .bento-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.cuisine-page .bento-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.cuisine-page .bento-content p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.cuisine-page .bento-row-layout {
+  flex-direction: row;
+  align-items: center;
+  gap: 2rem;
+  padding: 0;
+}
+
+.cuisine-page .bento-text-part {
+  padding: 2.5rem;
+  flex: 1;
+}
+
+.cuisine-page .bento-img-part {
+  flex: 1;
+  height: 100%;
+  padding: 1.5rem 1.5rem 1.5rem 0;
+}
+
+.cuisine-page .bento-img-part img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .cuisine-page .cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cuisine-page .dish-row {
+    gap: 2rem;
+  }
+  .cuisine-page .bento-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cuisine-page .bento-large-tl, 
+  .cuisine-page .bento-large-br {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .cuisine-page .cuisine-hero-card {
+    padding: 2rem;
+    margin: 0 1rem;
+  }
+  .cuisine-page .cuisine-categories {
+    margin-top: 2rem;
+  }
+  .cuisine-page .dish-row, .cuisine-page .dish-row.reverse {
+    grid-template-columns: 1fr;
+  }
+  .cuisine-page .dish-row.reverse .dish-content {
+    order: 2;
+  }
+  .cuisine-page .dish-row.reverse .dish-image {
+    order: 1;
+  }
+  .cuisine-page .bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .cuisine-page .bento-large-tl,
+  .cuisine-page .bento-small-tr,
+  .cuisine-page .bento-small-bl,
+  .cuisine-page .bento-large-br {
+    grid-column: span 1;
+  }
+  .cuisine-page .bento-row-layout {
+    flex-direction: column;
+  }
+  .cuisine-page .bento-img-part {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    width: 100%;
+    height: 250px;
+  }
+}

@@ -1,0 +1,349 @@
+/* Shared CSS for Admin Tables (AdminPosts, AdminUsers) */
+.admin-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.admin-page-header h1 {
+  font-size: 1.8rem;
+  color: #0f172a;
+  margin-bottom: 0.3rem;
+}
+
+.admin-page-header p {
+  color: #64748b;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-outline {
+  background-color: white;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* Toolbar & Tabs */
+.table-toolbar {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: #0f172a;
+}
+
+.tab-btn.active {
+  color: var(--primary);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1rem; /* match toolbar padding */
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary);
+}
+
+.tab-badge {
+  background-color: #e2e8f0;
+  color: #475569;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 99px;
+  margin-left: 0.4rem;
+}
+
+.tab-badge.warning-bg {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 0.8rem;
+  color: #94a3b8;
+}
+
+.search-box input {
+  padding: 0.5rem 1rem 0.5rem 2.2rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  width: 250px;
+}
+
+.search-box input:focus {
+  border-color: var(--primary);
+}
+
+/* Table */
+.table-container {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.admin-table th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.admin-table tr:hover td {
+  background-color: #f8fafc;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.font-medium {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+/* Badges */
+.category-badge {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-badge.success {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.status-badge.warning {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.role-badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.role-badge.admin { background-color: #fee2e2; color: #dc2626; }
+.role-badge.ctv { background-color: #e0f2fe; color: #0284c7; }
+.role-badge.user { background-color: #f1f5f9; color: #475569; }
+
+/* Users Cell */
+.user-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #e2e8f0;
+  color: #475569;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Actions */
+.actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.action-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-icon.primary { color: #3b82f6; }
+.action-icon.primary:hover { background-color: #eff6ff; }
+
+.action-icon.danger { color: #ef4444; }
+.action-icon.danger:hover { background-color: #fef2f2; }
+
+.action-icon.success { color: #10b981; }
+.action-icon.success:hover { background-color: #ecfdf5; }
+
+.action-btn-text {
+  background: none;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s;
+}
+
+.action-btn-text:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.empty-state {
+  padding: 3rem !important;
+  color: #94a3b8 !important;
+  font-style: italic;
+}
+
+/* Pagination */
+.table-pagination {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.pagination-controls button {
+  background: white;
+  border: 1px solid #cbd5e1;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  color: #475569;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #f8fafc;
+}
+
+.pagination-controls button.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f1f5f9;
+}

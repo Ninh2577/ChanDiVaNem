@@ -1,0 +1,450 @@
+/* About.css */
+.about-main-page {
+  background-color: var(--bg-main);
+}
+
+/* Reused Layout from Privacy/Newsletter */
+.privacy-layout {
+  display: flex;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.privacy-sidebar {
+  width: 280px;
+  background-color: #faf7f2;
+  padding: 3rem 2rem;
+  border-right: 1px solid var(--border-light);
+  min-height: calc(100vh - 80px);
+}
+
+.privacy-sidebar .sidebar-header {
+  margin-bottom: 2.5rem;
+}
+
+.privacy-sidebar .sidebar-header h3 {
+  font-size: 1.1rem;
+  color: var(--primary);
+  margin-bottom: 0.3rem;
+  font-weight: 700;
+}
+
+.privacy-sidebar .sidebar-header p {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.privacy-sidebar .sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.privacy-sidebar .sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  color: var(--text-dark);
+  font-weight: 600;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.privacy-sidebar .sidebar-link:hover {
+  background-color: rgba(0,0,0,0.03);
+}
+
+.privacy-sidebar .sidebar-link.active {
+  background-color: white;
+  color: var(--primary);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  position: relative;
+}
+
+.privacy-sidebar .sidebar-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 3px;
+  background-color: var(--primary);
+  border-radius: 0 4px 4px 0;
+}
+
+.privacy-main {
+  flex: 1;
+  /* Instead of padding in privacy-main, we will handle hero full width inside */
+  padding: 0;
+  max-width: calc(100vw - 280px);
+  overflow-x: hidden;
+}
+
+/* Hero Section */
+.about-hero {
+  position: relative;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  padding: 4rem 5rem;
+}
+
+.about-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.about-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(253,251,248,0.95) 0%, rgba(253,251,248,0.7) 40%, transparent 100%);
+}
+
+.about-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+}
+
+.about-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #c98e61;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  background: rgba(255,255,255,0.8);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+}
+
+.about-hero-content h1 {
+  font-size: 4rem;
+  line-height: 1.1;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+}
+
+.about-hero-content p {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--text-dark);
+  font-family: var(--font-serif);
+  font-style: italic;
+  opacity: 0.9;
+  max-width: 450px;
+}
+
+/* Brand Story Section */
+.about-story {
+  display: flex;
+  gap: 4rem;
+  padding: 6rem 5rem;
+  background-color: var(--bg-main);
+  align-items: center;
+}
+
+.story-text {
+  flex: 1;
+}
+
+.story-text h2 {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+
+.italic-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.story-text p {
+  font-size: 1.05rem;
+  color: var(--text-light);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.story-text strong {
+  color: var(--text-dark);
+}
+
+.story-images {
+  flex: 1;
+  display: flex;
+  gap: 1.5rem;
+  height: 450px;
+}
+
+.img-main {
+  flex: 3;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.img-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.img-stack {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.img-stack img {
+  width: 100%;
+  height: calc(50% - 0.75rem);
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Vision & Mission */
+.about-vision-mission {
+  padding: 0 5rem 6rem;
+  background-color: var(--bg-main);
+}
+
+.vm-card {
+  background: white;
+  border-radius: 20px;
+  padding: 4rem;
+  display: flex;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+}
+
+.vm-col {
+  flex: 1;
+  position: relative;
+}
+
+.vm-divider {
+  width: 1px;
+  background-color: var(--border-light);
+  margin: 0 4rem;
+}
+
+.vm-title {
+  font-size: 1.4rem;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.vm-col p {
+  color: var(--text-light);
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+.vm-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.vm-list li {
+  color: var(--text-light);
+  line-height: 1.7;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.vm-list li::before {
+  content: '•';
+  color: var(--primary);
+  position: absolute;
+  left: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  top: -2px;
+}
+
+.vm-circle-decor {
+  position: absolute;
+  right: -2rem;
+  bottom: -2rem;
+  width: 150px;
+  height: 150px;
+  border: 15px solid #faf7f2;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Team Section */
+.about-team {
+  padding: 4rem 5rem 8rem;
+  background-color: #faf7f2;
+}
+
+.team-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.team-header h2 {
+  font-size: 2.2rem;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.team-header p {
+  color: var(--text-light);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.team-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.team-card.staggered {
+  margin-top: 3rem;
+}
+
+.team-img {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  background: white; /* In case of transparent images */
+  aspect-ratio: 3/4;
+}
+
+.team-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.team-card:hover .team-img img {
+  transform: scale(1.05);
+}
+
+.team-info {
+  text-align: left;
+}
+
+.team-info h4 {
+  font-size: 1.2rem;
+  color: var(--text-dark);
+  margin-bottom: 0.3rem;
+}
+
+.team-info span {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .privacy-main {
+    max-width: calc(100vw - 220px);
+  }
+  .privacy-sidebar {
+    width: 220px;
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .about-story {
+    flex-direction: column;
+  }
+  .story-images {
+    width: 100%;
+  }
+  .vm-card {
+    flex-direction: column;
+    padding: 3rem;
+  }
+  .vm-divider {
+    width: 100%;
+    height: 1px;
+    margin: 2rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .privacy-layout {
+    flex-direction: column;
+  }
+  .privacy-sidebar {
+    width: 100%;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .privacy-main {
+    max-width: 100%;
+  }
+  .about-hero {
+    padding: 3rem 1.5rem;
+  }
+  .about-hero-content h1 {
+    font-size: 2.5rem;
+  }
+  .about-story, .about-vision-mission, .about-team {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+  .team-card.staggered {
+    margin-top: 0;
+  }
+  .team-img {
+    aspect-ratio: auto;
+    height: 400px;
+  }
+}
