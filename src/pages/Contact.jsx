@@ -1,8 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Contact.css';
+
+const API = 'http://localhost:5000';
+
+const DEFAULT_CONTACT = {
+  title: 'Góp thêm những \ncâu chuyện di sản.',
+  subtitle: 'LIÊN HỆ',
+  description: 'Bạn là một người say mê văn hóa, một đối tác tiềm năng, hay chỉ muốn chia sẻ cảm nhận, chúng tôi luôn lắng nghe.',
+  address: 'Số 12A, Ngõ 45 Lý Nam Đế, Quận Hoàn Kiếm, Hà Nội',
+  phone: '+84 (0) 24 3823 4567',
+  email: 'lienhe@chandivanem.vn',
+  workingHours: 'Thứ 2 - Thứ 6: 09:00 - 18:00',
+  mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.0968141680517!2d105.84752837583688!3d21.028813980620315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab953357c995%3A0x1babf6f5407858f0!2zSOG7kyBIb8OgbiBLaeG6v20!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2svn',
+};
 
 const Contact = () => {
   const [activeTab, setActiveTab] = useState('gop-y');
+  const [data, setData] = useState(DEFAULT_CONTACT);
+
+  useEffect(() => {
+    fetch(`${API}/api/site-content/page_contact`)
+      .then(res => res.ok ? res.json() : null)
+      .then(resData => {
+        if (resData) {
+          setData(prev => ({ ...prev, ...resData }));
+        }
+      })
+      .catch(() => console.warn('Sử dụng dữ liệu Liên hệ mặc định.'));
+  }, []);
 
   return (
     <div className="contact-page">
@@ -49,12 +74,16 @@ const Contact = () => {
           {activeTab === 'gop-y' && (
             <>
               <section className="contact-hero">
-                <div className="hero-text">
-                  <h1>Góp thêm những <br/><span className="highlight-italic">câu chuyện</span> di sản.</h1>
-                  <p>Bạn là một người say mê văn hóa, một đối tác tiềm năng, hay chỉ muốn chia sẻ cảm nhận, chúng tôi luôn lắng nghe.</p>
+                <div className="hero-text animate-fade">
+                  <span className="about-tag" style={{ display: 'inline-block', marginBottom: '0.5rem', color: '#9e3322', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.05em' }}>{data.subtitle}</span>
+                  <h1>
+                    {data.title?.split('\n').map((line, i) => (
+                      <span key={i}>{i === 1 ? <span className="highlight-italic">{line}</span> : line}{i < data.title.split('\n').length - 1 && <br />}</span>
+                    ))}
+                  </h1>
+                  <p>{data.description}</p>
                 </div>
                 <div className="hero-image">
-                  {/* Fixed the broken teacups image */}
                   <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800" alt="Cafe and culture" />
                 </div>
               </section>
@@ -62,15 +91,15 @@ const Contact = () => {
               <section className="contact-content-split">
                 <div className="form-area">
                   <h2>Gửi Lời Nhắn</h2>
-                  <form className="contact-form">
+                  <form className="contact-form" onSubmit={e => { e.preventDefault(); alert('Cảm ơn bạn đã đóng góp ý kiến!'); }}>
                     <div className="form-row">
                       <div className="form-group">
                         <label>HỌ TÊN</label>
-                        <input type="text" placeholder="Nguyễn Văn A" />
+                        <input type="text" placeholder="Nguyễn Văn A" required />
                       </div>
                       <div className="form-group">
                         <label>EMAIL</label>
-                        <input type="email" placeholder="example@email.com" />
+                        <input type="email" placeholder="example@email.com" required />
                       </div>
                     </div>
                     
@@ -87,7 +116,7 @@ const Contact = () => {
 
                     <div className="form-group">
                       <label>LỜI NHẮN</label>
-                      <textarea rows="5" placeholder="Chia sẻ suy nghĩ của bạn cùng chúng tôi..."></textarea>
+                      <textarea rows="5" placeholder="Chia sẻ suy nghĩ của bạn cùng chúng tôi..." required></textarea>
                     </div>
 
                     <button type="submit" className="btn-submit">Gửi Lời Nhắn <span>➢</span></button>
@@ -100,7 +129,7 @@ const Contact = () => {
                       <div className="info-icon">📍</div>
                       <div className="info-text">
                         <h4>Địa Chỉ Văn Phòng</h4>
-                        <p>Số 12A, Ngõ 45 Lý Nam Đế,<br/>Quận Hoàn Kiếm, Hà Nội</p>
+                        <p>{data.address}</p>
                       </div>
                     </div>
                     
@@ -108,7 +137,7 @@ const Contact = () => {
                       <div className="info-icon">📞</div>
                       <div className="info-text">
                         <h4>Điện Thoại</h4>
-                        <p>+84 (0) 24 3823 4567<br/>Thứ 2 - Thứ 6: 09:00 - 18:00</p>
+                        <p>{data.phone}<br/>{data.workingHours}</p>
                       </div>
                     </div>
                     
@@ -116,12 +145,27 @@ const Contact = () => {
                       <div className="info-icon">📧</div>
                       <div className="info-text">
                         <h4>Email Hỗ Trợ</h4>
-                        <p>lienhe@chandivanem.vn</p>
+                        <p>{data.email}</p>
                       </div>
                     </div>
                   </div>
                 </div>
               </section>
+
+              {data.mapEmbedUrl && (
+                <section className="contact-map-section animate-fade" style={{ marginTop: '3rem', width: '100%', height: '400px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                  <iframe 
+                    src={data.mapEmbedUrl}
+                    width="100%" 
+                    height="100%" 
+                    style={{ border: 0 }} 
+                    allowFullScreen="" 
+                    loading="lazy" 
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Bản đồ văn phòng Chân Đi Và Nếm"
+                  ></iframe>
+                </section>
+              )}
             </>
           )}
 
@@ -187,15 +231,15 @@ const Contact = () => {
               <section className="contact-content-split">
                 <div className="form-area">
                   <h2>Đăng ký Hợp tác</h2>
-                  <form className="contact-form">
+                  <form className="contact-form" onSubmit={e => { e.preventDefault(); alert('Cảm ơn bạn! Đăng ký hợp tác đã gửi thành công.'); }}>
                     <div className="form-row">
                       <div className="form-group">
                         <label>TÊN CÔNG TY / THƯƠNG HIỆU</label>
-                        <input type="text" placeholder="Tên doanh nghiệp của bạn" />
+                        <input type="text" placeholder="Tên doanh nghiệp của bạn" required />
                       </div>
                       <div className="form-group">
                         <label>EMAIL DOANH NGHIỆP</label>
-                        <input type="email" placeholder="contact@company.com" />
+                        <input type="email" placeholder="contact@company.com" required />
                       </div>
                     </div>
                     

@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get('/', getAllContent);
 router.get('/:key', getContent);
-router.put('/:key', verifyToken, verifyAdmin, updateContent);
+router.put('/:key', verifyAdmin, updateContent);
 
 export default router;

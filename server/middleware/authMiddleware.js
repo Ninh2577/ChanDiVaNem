@@ -28,3 +28,14 @@ export const verifyAdmin = (req, res, next) => {
     }
   });
 };
+
+export const verifyCTV = (req, res, next) => {
+  verifyToken(req, res, (err) => {
+    if (err) return next(err);
+    if (req.user && (req.user.role === 'CTV' || req.user.role === 'ADMIN')) {
+      next();
+    } else {
+      next(new AppError('Chỉ Cộng tác viên hoặc Quản trị viên mới có quyền thực hiện chức năng này.', 403));
+    }
+  });
+};

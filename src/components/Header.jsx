@@ -152,6 +152,11 @@ const Header = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const closeTimer = useRef(null);
 
+  // States cho Auth động
+  const [user, setUser] = useState(null);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
   const fetchNavigation = async () => {
     try {
       const res = await fetch('http://localhost:5000/api/navigation');
@@ -185,6 +190,42 @@ const Header = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Đăng ký lắng nghe sự kiện auth-change và storage để cập nhật user lập tức
+  useEffect(() => {
+    const loadUser = () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    loadUser();
+
+    window.addEventListener('auth-change', loadUser);
+    window.addEventListener('storage', loadUser);
+    return () => {
+      window.removeEventListener('auth-change', loadUser);
+      window.removeEventListener('storage', loadUser);
+    };
+  }, []);
+
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
   const handleMouseEnter = (id) => {
     clearTimeout(closeTimer.current);
     setActiveMenu(id);
@@ -192,6 +233,15 @@ const Header = () => {
 
   const handleMouseLeave = () => {
     closeTimer.current = setTimeout(() => setActiveMenu(null), 150);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setIsUserMenuOpen(false);
+    window.dispatchEvent(new Event('auth-change'));
+    window.location.href = '/';
   };
 
   return (
@@ -255,7 +305,61 @@ const Header = () => {
               <Bookmark size={19} strokeWidth={1.75} />
             </Link>
             <div className="header-divider" />
-            <Link to="/login" className="header-login-btn">Đăng Nhập</Link>
+            
+            {user ? (
+              <div className="header-user-menu" ref={userMenuRef}>
+                <button
+                  className="header-avatar-btn"
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  aria-label="Tài khoản"
+                >
+                  {user.avatarUrl ? (
+                    <img
+                      src={`http://localhost:5000${user.avatarUrl}`}
+                      alt={user.fullName}
+                      className="user-avatar-img"
+                    />
+                  ) : (
+                    <div className="user-avatar-text">
+                      {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                  )}
+                </button>
+                {isUserMenuOpen && (
+                  <div className="header-user-dropdown">
+                    <div className="dropdown-user-info">
+                      <p className="dropdown-user-name">{user.fullName}</p>
+                      <p className="dropdown-user-email">{user.email}</p>
+                      <span className={`role-badge role-${user.role.toLowerCase()}`}>
+                        {user.role === 'ADMIN' ? 'Quản trị viên' : user.role === 'CTV' ? 'Cộng tác viên' : 'Độc giả'}
+                      </span>
+                    </div>
+                    <div className="dropdown-divider" />
+                    <div className="dropdown-links">
+                      {user.role === 'ADMIN' && (
+                        <Link to="/admin" className="dropdown-link" onClick={() => setIsUserMenuOpen(false)}>
+                          <LucideIcons.LayoutDashboard size={16} /> Trang Quản Trị
+                        </Link>
+                      )}
+                      {user.role === 'CTV' && (
+                        <Link to="/ctv" className="dropdown-link" onClick={() => setIsUserMenuOpen(false)}>
+                          <LucideIcons.LayoutDashboard size={16} /> Trang CTV
+                        </Link>
+                      )}
+                      <Link to="/saved" className="dropdown-link" onClick={() => setIsUserMenuOpen(false)}>
+                        <LucideIcons.Bookmark size={16} /> Bài Viết Đã Lưu
+                      </Link>
+                      <button onClick={handleLogout} className="dropdown-logout-btn">
+                        <LucideIcons.LogOut size={16} /> Đăng Xuất
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="header-login-btn">Đăng Nhập</Link>
+            )}
+
             <button className="mobile-menu-btn" onClick={() => setIsMobileOpen(!isMobileOpen)}>
               {isMobileOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
@@ -272,9 +376,48 @@ const Header = () => {
                 onClose={() => setIsMobileOpen(false)}
               />
             ))}
-            <Link to="/login" className="mobile-login-btn" onClick={() => setIsMobileOpen(false)}>
-              Đăng Nhập
-            </Link>
+            
+            {user ? (
+              <div className="mobile-user-section">
+                <div className="mobile-user-info">
+                  <div className="mobile-user-avatar">
+                    {user.avatarUrl ? (
+                      <img src={`http://localhost:5000${user.avatarUrl}`} alt={user.fullName} />
+                    ) : (
+                      <span>{user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="mobile-user-name">{user.fullName}</p>
+                    <p className="mobile-user-role">
+                      {user.role === 'ADMIN' ? 'Quản trị viên' : user.role === 'CTV' ? 'Cộng tác viên' : 'Độc giả'}
+                    </p>
+                  </div>
+                </div>
+                <div className="mobile-user-links">
+                  {user.role === 'ADMIN' && (
+                    <Link to="/admin" className="mobile-user-link" onClick={() => setIsMobileOpen(false)}>
+                      <LucideIcons.LayoutDashboard size={16} /> Trang Quản Trị
+                    </Link>
+                  )}
+                  {user.role === 'CTV' && (
+                    <Link to="/ctv" className="mobile-user-link" onClick={() => setIsMobileOpen(false)}>
+                      <LucideIcons.LayoutDashboard size={16} /> Trang CTV
+                    </Link>
+                  )}
+                  <Link to="/saved" className="mobile-user-link" onClick={() => setIsMobileOpen(false)}>
+                    <LucideIcons.Bookmark size={16} /> Bài Viết Đã Lưu
+                  </Link>
+                  <button onClick={handleLogout} className="mobile-user-logout">
+                    <LucideIcons.LogOut size={16} /> Đăng Xuất
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link to="/login" className="mobile-login-btn" onClick={() => setIsMobileOpen(false)}>
+                Đăng Nhập
+              </Link>
+            )}
           </div>
         </div>
       </header>

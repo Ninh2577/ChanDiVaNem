@@ -32,11 +32,16 @@ const Login = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
+        // Phát sự kiện để Header cập nhật lập tức
+        window.dispatchEvent(new Event('auth-change'));
+
         // Điều hướng dựa trên Role
         if (data.user.role === 'ADMIN') {
           navigate('/admin');
-        } else {
+        } else if (data.user.role === 'CTV') {
           navigate('/ctv');
+        } else {
+          navigate('/');
         }
       } else {
         setErrorMsg(data.message || 'Đăng nhập thất bại.');

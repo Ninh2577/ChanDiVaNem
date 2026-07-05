@@ -27,17 +27,21 @@ import CreatePost from './pages/CreatePost';
 import AdminNavigation from './pages/AdminNavigation';
 import AdminHomepage from './pages/AdminHomepage';
 import AdminCategories from './pages/AdminCategories';
+import AdminAds from './pages/AdminAds';
 import NotFound from './pages/NotFound';
 import SearchResults from './pages/SearchResults';
 import Archive from './pages/Archive';
 import AuthorProfile from './pages/AuthorProfile';
 import SavedPosts from './pages/SavedPosts';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AdDeliveryManager } from './components/AdDeliveryManager';
 
 import './index.css';
 
 const PublicLayout = () => {
   return (
     <>
+      <AdDeliveryManager />
       <Header />
       <Outlet />
       <Footer />
@@ -74,24 +78,29 @@ const App = () => {
         <Route path="/register" element={<Register />} />
 
         {/* Admin Routes - No public Header/Footer */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="posts" element={<AdminPosts />} />
-          <Route path="posts/create" element={<CreatePost />} />
-          <Route path="posts/edit/:id" element={<CreatePost />} />
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="navigation" element={<AdminNavigation />} />
-          <Route path="categories" element={<AdminCategories />} />
-          <Route path="homepage" element={<AdminHomepage />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="posts" element={<AdminPosts />} />
+            <Route path="posts/create" element={<CreatePost />} />
+            <Route path="posts/edit/:id" element={<CreatePost />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="navigation" element={<AdminNavigation />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="homepage" element={<AdminHomepage />} />
+            <Route path="ads" element={<AdminAds />} />
+          </Route>
         </Route>
 
         {/* CTV Routes */}
-        <Route path="/ctv" element={<CTVLayout />}>
-          <Route index element={<CTVDashboard />} />
-          <Route path="my-posts" element={<CTVMyPosts />} />
-          <Route path="my-posts/create" element={<CreatePost />} />
-          <Route path="my-posts/edit/:id" element={<CreatePost />} />
-          <Route path="profile" element={<CTVProfile />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'CTV']} />}>
+          <Route path="/ctv" element={<CTVLayout />}>
+            <Route index element={<CTVDashboard />} />
+            <Route path="my-posts" element={<CTVMyPosts />} />
+            <Route path="my-posts/create" element={<CreatePost />} />
+            <Route path="my-posts/edit/:id" element={<CreatePost />} />
+            <Route path="profile" element={<CTVProfile />} />
+          </Route>
         </Route>
 
         {/* 404 Not Found (Catch all) */}

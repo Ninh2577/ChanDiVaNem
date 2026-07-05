@@ -7,8 +7,8 @@ const router = express.Router();
 router.get('/', getCategories);
 
 // Các route quản lý (chỉ dành cho Admin)
-router.post('/', verifyToken, verifyAdmin, createCategory);
-router.put('/:id', verifyToken, verifyAdmin, updateCategory);
-router.delete('/:id', verifyToken, verifyAdmin, deleteCategory);
+router.post('/', verifyAdmin, createCategory);
+router.put('/:id', verifyAdmin, updateCategory);
+router.delete('/:id', verifyAdmin, deleteCategory);
 
 export default router;

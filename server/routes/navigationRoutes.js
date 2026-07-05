@@ -11,11 +11,11 @@ const router = express.Router();
 router.get('/', getNavigation);
 
 // Admin only
-router.put('/', verifyToken, verifyAdmin, updateNavigation);
-router.post('/root', verifyToken, verifyAdmin, addRootItem);
-router.post('/reorder', verifyToken, verifyAdmin, reorderItems);
-router.post('/:parentId/children', verifyToken, verifyAdmin, addChild);
-router.patch('/:id', verifyToken, verifyAdmin, updateItem);
-router.delete('/:id', verifyToken, verifyAdmin, deleteItem);
+router.put('/', verifyAdmin, updateNavigation);
+router.post('/root', verifyAdmin, addRootItem);
+router.post('/reorder', verifyAdmin, reorderItems);
+router.post('/:parentId/children', verifyAdmin, addChild);
+router.patch('/:id', verifyAdmin, updateItem);
+router.delete('/:id', verifyAdmin, deleteItem);
 
 export default router;

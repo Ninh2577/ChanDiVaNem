@@ -1,6 +1,6 @@
 import express from 'express';
 import { getPosts, getPublishedPosts, createPost, getPostBySlug, getPostById, updatePost, deletePost, togglePostLock } from '../controllers/postController.js';
-import { verifyToken, verifyAdmin } from '../middleware/authMiddleware.js';
+import { verifyToken, verifyAdmin, verifyCTV } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -11,8 +11,8 @@ router.get('/', getPosts);
 router.get('/:slug', getPostBySlug);
 
 // Các routes cần đăng nhập (CTV hoặc Admin)
-router.post('/', verifyToken, createPost);
-router.put('/:id', verifyToken, updatePost);
+router.post('/', verifyCTV, createPost);
+router.put('/:id', verifyCTV, updatePost);
 
 // Các routes cần quyền Admin
 router.delete('/:id', verifyAdmin, deletePost);

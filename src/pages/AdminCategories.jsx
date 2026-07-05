@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Folder, ChevronRight, Save, X } from 'lucide-react';
+import { fetchWithAuth } from '../utils/api';
 import './AdminCategories.css';
 
 const AdminCategories = () => {
@@ -15,7 +16,7 @@ const AdminCategories = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/categories');
+      const res = await fetchWithAuth('http://localhost:5000/api/categories');
       if (res.ok) {
         const data = await res.json();
         setCategories(data);
@@ -74,12 +75,8 @@ const AdminCategories = () => {
     const method = editingId ? 'PUT' : 'POST';
 
     try {
-      const res = await fetch(url, {
+      const res = await fetchWithAuth(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({
           ...formData,
           parentId: formData.parentId ? parseInt(formData.parentId) : null
@@ -102,9 +99,8 @@ const AdminCategories = () => {
     if (!window.confirm('Bạn có chắc chắn muốn xóa chuyên mục này? Các bài viết thuộc chuyên mục này có thể bị ảnh hưởng.')) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/categories/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+      const res = await fetchWithAuth(`http://localhost:5000/api/categories/${id}`, {
+        method: 'DELETE'
       });
 
       if (res.ok) {

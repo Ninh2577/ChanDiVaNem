@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Eye, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { fetchWithAuth } from '../utils/api';
 import './AdminTable.css';
 
 const AdminUsers = () => {
@@ -13,8 +14,8 @@ const AdminUsers = () => {
     setLoading(true);
     try {
       const [usersRes, appsRes] = await Promise.all([
-        fetch('http://localhost:5000/api/users'),
-        fetch('http://localhost:5000/api/applications')
+        fetchWithAuth('http://localhost:5000/api/users'),
+        fetchWithAuth('http://localhost:5000/api/applications')
       ]);
       
       if (usersRes.ok) setUsers(await usersRes.json());
@@ -36,9 +37,8 @@ const AdminUsers = () => {
   const handleApproveCTV = async (id) => {
     if(window.confirm('Bạn có chắc chắn cấp quyền Cộng Tác Viên cho người dùng này?')) {
       try {
-        const res = await fetch(`http://localhost:5000/api/applications/${id}/status`, {
+        const res = await fetchWithAuth(`http://localhost:5000/api/applications/${id}/status`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'APPROVED' })
         });
         if (res.ok) {
@@ -54,9 +54,8 @@ const AdminUsers = () => {
   const handleRejectCTV = async (id) => {
     if(window.confirm('Từ chối đơn ứng tuyển này?')) {
       try {
-        const res = await fetch(`http://localhost:5000/api/applications/${id}/status`, {
+        const res = await fetchWithAuth(`http://localhost:5000/api/applications/${id}/status`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'REJECTED' })
         });
         if (res.ok) {
@@ -71,7 +70,7 @@ const AdminUsers = () => {
   const handleDeleteUser = async (id) => {
     if(window.confirm('Xóa người dùng này vĩnh viễn?')) {
       try {
-        const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+        const res = await fetchWithAuth(`http://localhost:5000/api/users/${id}`, {
           method: 'DELETE'
         });
         if (res.ok) {

@@ -288,6 +288,130 @@ const CultureTab = ({ data, onSave, saving }) => {
 };
 
 // ======================================================
+// TAB 5 — TRANG GIỚI THIỆU (ABOUT)
+// ======================================================
+const PageAboutTab = ({ data, onSave, saving }) => {
+  const DEFAULT_ABOUT = {
+    heroTitle: 'Gìn giữ hồn\nViệt qua từng\nbước chân.',
+    heroSubtitle: 'HÀNH TRÌNH TÂM HỒN',
+    heroDescription: 'Chúng tôi không chỉ kể chuyện. Chúng tôi lưu trữ những giá trị hữu hình và vô hình của một Việt Nam rực rỡ.',
+    heroImageUrl: '',
+    storyTitle: 'Câu chuyện\nThương hiệu',
+    storyDescription1: 'Bắt đầu từ niềm đam mê bất tận với những cung đường vắt ngang đồi chè và hương vị mộc mạc của gánh hàng rong ven đô, CHÂN ĐI VÀ NẾM ra đời như một cuốn nhật ký sống động.',
+    storyDescription2: 'Chúng tôi tin rằng văn hóa không nằm trong bảo tàng; nó nằm trong cách một nghệ nhân nâng niu thớ lụa, cách một bà cụ nêm nếm bát phở sáng, và cách người trẻ tìm về nguồn cội bằng góc nhìn đương đại.',
+    storyImageUrl1: '',
+    storyImageUrl2: '',
+    storyImageUrl3: '',
+    visionText: 'Trở thành nền tảng truyền thông di sản hàng đầu, đưa vẻ đẹp đích thực của Việt Nam đến với cộng đồng quốc tế thông qua những trải nghiệm thị giác và nội dung có chiều sâu nghệ thuật.',
+    missionText1: 'Quảng bá văn hóa & ẩm thực bền vững.',
+    missionText2: 'Hỗ trợ cộng đồng nghệ nhân địa phương.',
+    missionText3: 'Tạo ra hệ sinh thái du lịch văn hóa tử tế.',
+  };
+
+  const [d, setD] = useState({ ...DEFAULT_ABOUT, ...data });
+  const set = (k, v) => setD(prev => ({ ...prev, [k]: v }));
+
+  return (
+    <div className="tab-content">
+      <div className="tab-desc">
+        <LayoutDashboard size={16} /> Quản lý Nội dung tĩnh trang "Giới thiệu" (About Page)
+      </div>
+
+      <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: '1.5rem', marginBottom: '1.5rem' }}>
+        <h3 style={{ fontSize: '1rem', color: '#1e293b', marginBottom: '1rem', fontWeight: 700 }}>1. Phần Banner Đầu Trang (Hero Banner)</h3>
+        <div className="fields-grid-2">
+          <TF label="Tiêu đề phụ (Badge nhỏ)" value={d.heroSubtitle} onChange={v => set('heroSubtitle', v)} placeholder="HÀNH TRÌNH TÂM HỒN" />
+          <TF label="Mô tả ngắn Hero" value={d.heroDescription} onChange={v => set('heroDescription', v)} placeholder="Mô tả ngắn..." />
+        </div>
+        <TF label="Tiêu đề lớn Hero (dùng \n để xuống dòng)" value={d.heroTitle} onChange={v => set('heroTitle', v)} placeholder="Gìn giữ hồn\nViệt..." />
+        <ImageUploadField label="Ảnh nền Hero" value={d.heroImageUrl} fallback="https://images.unsplash.com/photo-1542013897-40da8bc3257a?auto=format&fit=crop&q=80&w=1200" onChange={v => set('heroImageUrl', v)} />
+      </div>
+
+      <div style={{ borderBottom: '1px dashed #e2e8f0', paddingBottom: '1.5rem', marginBottom: '1.5rem' }}>
+        <h3 style={{ fontSize: '1rem', color: '#1e293b', marginBottom: '1rem', fontWeight: 700 }}>2. Câu Chuyện Thương Hiệu</h3>
+        <TF label="Tiêu đề câu chuyện" value={d.storyTitle} onChange={v => set('storyTitle', v)} placeholder="Câu chuyện\nThương hiệu" />
+        <TF label="Đoạn văn 1" value={d.storyDescription1} onChange={v => set('storyDescription1', v)} placeholder="Đoạn văn thứ nhất..." textarea />
+        <TF label="Đoạn văn 2" value={d.storyDescription2} onChange={v => set('storyDescription2', v)} placeholder="Đoạn văn thứ hai..." textarea />
+        
+        <div className="fields-grid-3">
+          <ImageUploadField label="Ảnh Câu chuyện 1 (Chính trái)" value={d.storyImageUrl1} fallback="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=80&w=600" onChange={v => set('storyImageUrl1', v)} />
+          <ImageUploadField label="Ảnh Câu chuyện 2 (Phụ trên)" value={d.storyImageUrl2} fallback="https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=600" onChange={v => set('storyImageUrl2', v)} />
+          <ImageUploadField label="Ảnh Câu chuyện 3 (Phụ dưới)" value={d.storyImageUrl3} fallback="https://images.unsplash.com/photo-1583417646194-672589255ce4?auto=format&fit=crop&q=80&w=600" onChange={v => set('storyImageUrl3', v)} />
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ fontSize: '1rem', color: '#1e293b', marginBottom: '1rem', fontWeight: 700 }}>3. Tầm Nhìn & Sứ Mệnh</h3>
+        <TF label="Đoạn văn Tầm nhìn" value={d.visionText} onChange={v => set('visionText', v)} placeholder="Trở thành nền tảng..." textarea />
+        <div className="fields-grid-3">
+          <TF label="Sứ mệnh dòng 1" value={d.missionText1} onChange={v => set('missionText1', v)} placeholder="Dòng 1..." />
+          <TF label="Sứ mệnh dòng 2" value={d.missionText2} onChange={v => set('missionText2', v)} placeholder="Dòng 2..." />
+          <TF label="Sứ mệnh dòng 3" value={d.missionText3} onChange={v => set('missionText3', v)} placeholder="Dòng 3..." />
+        </div>
+      </div>
+
+      <div className="save-row">
+        <button className="btn-save" onClick={() => onSave('page_about', d)} disabled={saving}>
+          <Save size={16} /> {saving ? 'Đang lưu...' : 'Lưu Trang Giới thiệu'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ======================================================
+// TAB 6 — TRANG LIÊN HỆ (CONTACT)
+// ======================================================
+const PageContactTab = ({ data, onSave, saving }) => {
+  const DEFAULT_CONTACT = {
+    title: 'Gửi Lời Nhắn\nCho Chúng Tôi',
+    subtitle: 'LIÊN HỆ',
+    description: 'Chúng tôi luôn lắng nghe những ý kiến đóng góp, ý tưởng hợp tác hoặc đơn giản là một lời chào từ bạn.',
+    address: 'Số 10, Đường Di Sản, Quận Hoàn Kiếm, Hà Nội',
+    phone: '098 765 4321',
+    email: 'hello@chandivanem.local',
+    workingHours: 'Thứ Hai - Thứ Sáu: 08:30 - 17:30',
+    mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.0968141680517!2d105.84752837583688!3d21.028813980620315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab953357c995%3A0x1babf6f5407858f0!2zSOG7kyBIb8OgbiBLaeG6v20!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2svn',
+  };
+
+  const [d, setD] = useState({ ...DEFAULT_CONTACT, ...data });
+  const set = (k, v) => setD(prev => ({ ...prev, [k]: v }));
+
+  return (
+    <div className="tab-content">
+      <div className="tab-desc">
+        <LayoutDashboard size={16} /> Quản lý Nội dung tĩnh trang "Liên hệ" (Contact Page)
+      </div>
+
+      <div className="fields-grid-2">
+        <TF label="Tiêu đề phụ" value={d.subtitle} onChange={v => set('subtitle', v)} placeholder="LIÊN HỆ" />
+        <TF label="Hotline liên hệ" value={d.phone} onChange={v => set('phone', v)} placeholder="098 765 4321" />
+      </div>
+      <TF label="Tiêu đề lớn (dùng \n để xuống dòng)" value={d.title} onChange={v => set('title', v)} placeholder="Gửi Lời Nhắn..." />
+      <TF label="Mô tả ngắn" value={d.description} onChange={v => set('description', v)} placeholder="Chúng tôi luôn lắng nghe..." textarea />
+
+      <div className="fields-grid-3">
+        <TF label="Địa chỉ văn phòng" value={d.address} onChange={v => set('address', v)} placeholder="Số 10..." />
+        <TF label="Email hỗ trợ" value={d.email} onChange={v => set('email', v)} placeholder="hello@..." />
+        <TF label="Giờ làm việc" value={d.workingHours} onChange={v => set('workingHours', v)} placeholder="Thứ Hai..." />
+      </div>
+
+      <div className="form-field mt-4">
+        <label className="field-label">Đường dẫn Nhúng Bản đồ (Google Maps Iframe src URL)</label>
+        <input type="text" className="field-input" value={d.mapEmbedUrl} onChange={e => set('mapEmbedUrl', e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." />
+        <p className="field-hint">Nhập phần thuộc tính `src="..."` trích xuất từ thẻ Iframe nhúng bản đồ của Google Maps.</p>
+      </div>
+
+      <div className="save-row">
+        <button className="btn-save" onClick={() => onSave('page_contact', d)} disabled={saving}>
+          <Save size={16} /> {saving ? 'Đang lưu...' : 'Lưu Trang Liên hệ'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ======================================================
 // TRANG CHÍNH
 // ======================================================
 const AdminHomepage = () => {
@@ -314,7 +438,7 @@ const AdminHomepage = () => {
       });
       if (res.ok) {
         setContent(prev => ({ ...prev, [key]: value }));
-        setToast('✅ Đã lưu thành công! Trang chủ sẽ cập nhật ngay.');
+        setToast('✅ Đã lưu thành công! Trang web sẽ cập nhật ngay.');
         setTimeout(() => setToast(''), 3000);
       } else {
         alert('Lưu thất bại!');
@@ -328,18 +452,20 @@ const AdminHomepage = () => {
     { label: '② Điểm đến', icon: '🗺️' },
     { label: '③ Đặc sản', icon: '🍜' },
     { label: '④ Xếp hạng Bài viết', icon: '⭐' },
+    { label: '⑤ Trang Giới thiệu', icon: '📖' },
+    { label: '⑥ Trang Liên hệ', icon: '📞' },
   ];
 
   if (!content) return (
-    <div className="admin-page"><p style={{ padding: '2rem', color: '#64748b' }}>Đang tải nội dung trang chủ...</p></div>
+    <div className="admin-page"><p style={{ padding: '2rem', color: '#64748b' }}>Đang tải cấu hình CMS...</p></div>
   );
 
   return (
     <div className="admin-page">
       <div className="admin-page-header">
         <div>
-          <h1>🏠 Quản lý Nội dung Trang Chủ</h1>
-          <p>Thay đổi text, hình ảnh và đường link của từng section — không cần chỉnh code.</p>
+          <h1>🏠 Quản lý Nội dung Site (CMS)</h1>
+          <p>Thay đổi text, hình ảnh và cấu trúc của từng trang con — không cần can thiệp code.</p>
         </div>
         <a href="/" target="_blank" rel="noreferrer" className="btn-preview">
           👁 Xem trang chủ
@@ -375,6 +501,12 @@ const AdminHomepage = () => {
           )}
           {activeTab === 3 && content.home_culture && (
             <CultureTab data={content.home_culture} onSave={handleSave} saving={saving} />
+          )}
+          {activeTab === 4 && (
+            <PageAboutTab data={content.page_about || {}} onSave={handleSave} saving={saving} />
+          )}
+          {activeTab === 5 && (
+            <PageContactTab data={content.page_contact || {}} onSave={handleSave} saving={saving} />
           )}
         </div>
       </div>

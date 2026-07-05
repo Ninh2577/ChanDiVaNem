@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, FileText, Users, MapPin, Coffee, Settings, LogOut, Bell, Search, Layout, Home } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, MapPin, Coffee, Settings, LogOut, Bell, Search, Layout, Home, DollarSign } from 'lucide-react';
 import './AdminLayout.css';
 
 const AdminLayout = () => {
@@ -39,6 +39,9 @@ const AdminLayout = () => {
           <p className="admin-nav-title">HỆ THỐNG</p>
           <NavLink to="/admin/homepage" className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>
             <Home size={20} /> Trang Chủ CMS
+          </NavLink>
+          <NavLink to="/admin/ads" className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>
+            <DollarSign size={20} /> Quảng Cáo & Doanh Thu
           </NavLink>
           <NavLink to="/admin/navigation" className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>
             <Layout size={20} /> Quản lý Menu

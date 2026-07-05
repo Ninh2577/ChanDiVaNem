@@ -163,3 +163,20 @@ model SiteContent {
   value     String   @db.LongText  // JSON string
   updatedAt DateTime @updatedAt
 }
+
+model AdCampaign {
+  id              Int      @id @default(autoincrement())
+  title           String   // Tên chiến dịch quảng cáo
+  imageUrl        String   // Đường dẫn ảnh banner/popup
+  targetUrl       String   // Đường dẫn liên kết khi người dùng nhấp vào
+  position        String   // "POPUP_CENTER", "POPUP_BOTTOM_RIGHT", "BANNER_TOP", "BANNER_SIDEBAR"
+  startDate       DateTime // Ngày bắt đầu chạy
+  endDate         DateTime // Ngày kết thúc chạy
+  viewCount       Int      @default(0) // Số lượt hiển thị
+  clickCount      Int      @default(0) // Số lượt nhấp chuột
+  contractValue   Float    @default(0) // Giá trị hợp đồng thu được (doanh thu)
+  displayInterval Int      @default(5) // Thời gian trễ hiển thị (giây)
+  isActive        Boolean  @default(true) // Trạng thái kích hoạt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

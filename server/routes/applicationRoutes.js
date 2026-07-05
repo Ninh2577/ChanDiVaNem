@@ -1,5 +1,6 @@
 import express from 'express';
 import { submitApplication, getApplications, updateApplicationStatus } from '../controllers/applicationController.js';
+import { verifyAdmin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -7,9 +8,9 @@ const router = express.Router();
 router.post('/', submitApplication);
 
 // Lấy danh sách đơn (Admin)
-router.get('/', getApplications);
+router.get('/', verifyAdmin, getApplications);
 
 // Cập nhật trạng thái duyệt đơn (Admin)
-router.patch('/:id/status', updateApplicationStatus);
+router.patch('/:id/status', verifyAdmin, updateApplicationStatus);
 
 export default router;

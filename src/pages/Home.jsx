@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
+import { AdBanner } from '../components/AdDeliveryManager';
 
 const API = 'http://localhost:5000';
 
@@ -109,6 +110,7 @@ const Home = () => {
 
   return (
     <div className="home-page">
+      <AdBanner position="BANNER_TOP" />
       {/* Hero */}
       <section className="hero" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80')" }}>
         <div className="container">
