@@ -1,97 +1,186 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './Cuisine.css';
 
+const decodeHtmlEntities = (str) => {
+  if (!str) return '';
+  return str
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
+};
+
 const Cuisine = () => {
+  const [posts, setPosts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [postsRes, catsRes] = await Promise.all([
+          fetch('http://localhost:5000/api/posts/published'),
+          fetch('http://localhost:5000/api/categories')
+        ]);
+
+        if (postsRes.ok && catsRes.ok) {
+          const allPosts = await postsRes.json();
+          const allCategories = await catsRes.json();
+
+          const cuisineCat = allCategories.find(c => c.slug === 'am-thuc');
+          if (cuisineCat) {
+            const subCats = cuisineCat.children || [];
+            setCategories(subCats);
+
+            const cuisineIds = [cuisineCat.id, ...subCats.map(c => c.id)];
+            const cuisinePosts = allPosts.filter(post => cuisineIds.includes(post.categoryId));
+            setPosts(cuisinePosts);
+          } else {
+            setPosts(allPosts.filter(post => post.category?.slug?.includes('am-thuc')));
+          }
+        }
+      } catch (error) {
+        console.error('Lỗi lấy dữ liệu ẩm thực:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const filteredPosts = activeCategory === 'all'
+    ? posts
+    : posts.filter(post => post.categoryId === parseInt(activeCategory));
+
+  const featuredPosts = filteredPosts.slice(0, 2);
+  const remainingPosts = filteredPosts.slice(2);
+
+  const getCategoryIcon = (slug) => {
+    if (slug?.includes('nuoc')) return 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=400';
+    if (slug?.includes('kho')) return 'https://images.unsplash.com/photo-1628198754117-73b88dcd1e61?auto=format&fit=crop&q=80&w=400';
+    if (slug?.includes('vat')) return 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400';
+    return 'https://images.unsplash.com/photo-1538587888044-79f13ddd7e49?auto=format&fit=crop&q=80&w=400';
+  };
+
   return (
     <div className="cuisine-page">
-      {/* Hero Section */}
       <section className="cuisine-hero" style={{backgroundImage: "url('https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=80&w=2000')"}}>
         <div className="container">
           <div className="cuisine-hero-card">
             <span className="section-subtitle">HÀNH TRÌNH ẨM THỰC</span>
             <h1>Hương vị hồn Việt</h1>
             <p>Khám phá di sản tinh túy qua từng món ăn, từ những gánh hàng rong ven đường đến những bữa tiệc cung đình trang trọng.</p>
-            <button className="btn-primary">Khám phá ngay</button>
+            <a href="#discover-section" className="btn-primary" style={{ textDecoration: 'none', display: 'inline-block' }}>Khám phá ngay</a>
           </div>
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="cuisine-categories">
-        <div className="container">
-          <div className="cat-grid">
-            <div className="cat-card">
-              <img src="https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=400" alt="Món nước" />
-              <div className="cat-overlay">
-                <h3>Món nước</h3>
-                <p>Phở, Bún bò, Hủ tiếu</p>
-              </div>
+      {categories.length > 0 && (
+        <section className="cuisine-categories" id="discover-section">
+          <div className="container">
+            <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+              <span className="section-subtitle">CHUYÊN MỤC ẨM THỰC</span>
+              <h2>Khám phá theo danh mục</h2>
             </div>
-            <div className="cat-card">
-              <img src="https://images.unsplash.com/photo-1628198754117-73b88dcd1e61?auto=format&fit=crop&q=80&w=400" alt="Món khô" />
-              <div className="cat-overlay">
-                <h3>Món khô</h3>
-                <p>Cơm tấm, Bánh mì, Bún xèo</p>
+            
+            <div className="cat-grid">
+              <div 
+                className={`cat-card ${activeCategory === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveCategory('all')}
+                style={{ cursor: 'pointer' }}
+              >
+                <img src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=80&w=400" alt="Tất cả" />
+                <div className="cat-overlay">
+                  <h3>Tất cả món ăn</h3>
+                  <p>Xem toàn bộ công thức và câu chuyện</p>
+                </div>
               </div>
-            </div>
-            <div className="cat-card">
-              <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400" alt="Quà vặt" />
-              <div className="cat-overlay">
-                <h3>Quà vặt</h3>
-                <p>Chè, Bánh tráng, Gỏi cuốn</p>
-              </div>
-            </div>
-            <div className="cat-card">
-              <img src="https://images.unsplash.com/photo-1538587888044-79f13ddd7e49?auto=format&fit=crop&q=80&w=400" alt="Cà phê Việt" />
-              <div className="cat-overlay">
-                <h3>Cà phê Việt</h3>
-                <p>Đen, Trứng, Muối</p>
-              </div>
+
+              {categories.map(cat => (
+                <div 
+                  key={cat.id}
+                  className={`cat-card ${activeCategory === String(cat.id) ? 'active' : ''}`}
+                  onClick={() => setActiveCategory(String(cat.id))}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <img src={getCategoryIcon(cat.slug)} alt={cat.name} />
+                  <div className="cat-overlay">
+                    <h3>{cat.name}</h3>
+                    <p>{cat.description || 'Khám phá văn hoá ẩm thực'}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Featured Dishes (Zig-zag) */}
-      <section className="featured-dishes">
-        <div className="container">
-          
-          <div className="dish-row">
-            <div className="dish-image">
-              <img src="https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&q=80&w=800" alt="Bún Chả" />
-            </div>
-            <div className="dish-content">
-              <span className="section-subtitle">MÓN KHÔ - ĐẶC SẢN THỦ ĐÔ</span>
-              <h2>Bún Chả: Diệu vũ của khói và thịt nướng</h2>
-              <p>Hà Nội là những con ngõ nhỏ của Hà Nội cổ kính. Bún chả không chỉ là một món ăn, mà là một trải nghiệm giác quan. Những miếng chả băm và chả miếng được nướng cháy xém cạnh trên than hồng, quyện cùng nước mắm chua ngọt thanh tao.</p>
-              
-              <div className="location-box">
-                <div className="loc-title"><span>📍</span> Nơi thưởng thức ngon nhất</div>
-                <p>Bún chả Hương Liên (Ngô Thì Nhậm) hoặc các quán gánh vỉa hè phố cổ Hà Nội.</p>
+      {featuredPosts.length > 0 && (
+        <section className="featured-dishes">
+          <div className="container">
+            {featuredPosts.map((post, idx) => (
+              <div className={`dish-row ${idx % 2 === 1 ? 'reverse' : ''}`} key={post.id}>
+                <div className="dish-image">
+                  <img 
+                    src={post.imageUrl ? `http://localhost:5000${post.imageUrl}` : 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&q=80&w=800'} 
+                    alt={post.thumbnailAlt || post.title} 
+                  />
+                </div>
+                <div className="dish-content">
+                  <span className="section-subtitle">{post.category?.name?.toUpperCase() || 'ẨM THỰC'}</span>
+                  <h2>{post.title}</h2>
+                  <p>{decodeHtmlEntities(post.excerpt)}</p>
+                  
+                  <Link to={`/post/${post.slug}`} className="btn-primary" style={{ display: 'inline-block', marginTop: '1.5rem', textDecoration: 'none' }}>
+                    Khám phá câu chuyện
+                  </Link>
+                </div>
               </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {remainingPosts.length > 0 && (
+        <section className="cuisine-grid-section" style={{ padding: '5rem 0', background: '#fafaf9' }}>
+          <div className="container">
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <span className="section-subtitle">GÓC CHIA SẺ ẨM THỰC</span>
+              <h2>Các đặc sản & món ngon khác</h2>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2.5rem' }}>
+              {remainingPosts.map(post => (
+                <div key={post.id} style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column' }}>
+                  <img 
+                    src={post.imageUrl ? `http://localhost:5000${post.imageUrl}` : "https://images.unsplash.com/photo-1583417646194-672589255ce4?auto=format&fit=crop&q=80&w=600"} 
+                    alt={post.thumbnailAlt || post.title} 
+                    style={{ width: '100%', height: '220px', objectFit: 'cover' }}
+                  />
+                  <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: '1' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#9e3322', textTransform: 'uppercase', marginBottom: '0.5rem' }}>{post.category?.name}</span>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: '700', margin: '0 0 1rem' }}>
+                      <Link to={`/post/${post.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                        {post.title}
+                      </Link>
+                    </h3>
+                    <p style={{ fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6', marginBottom: '1.5rem' }}>{decodeHtmlEntities(post.excerpt)}</p>
+                    <Link to={`/post/${post.slug}`} style={{ marginTop: 'auto', fontSize: '0.9rem', fontWeight: '600', color: '#9e3322', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                      Đọc tiếp <span>→</span>
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+        </section>
+      )}
 
-          <div className="dish-row reverse">
-            <div className="dish-content">
-              <span className="section-subtitle">MÓN NƯỚC - QUỐC HỒN QUỐC TÚY</span>
-              <h2>Phở: Tinh hoa trong từng giọt nước dùng</h2>
-              <p>Phở là linh hồn ẩm thực của người Việt. Nước dùng phở mang đậm đà, được ninh từ xương ống suốt hàng chục giờ cùng với quế, hồi, gừng nướng và thảo quả, tạo nên một hương vị mê đắm khó quên.</p>
-              
-              <div className="location-box">
-                <div className="loc-title"><span>📍</span> Nơi thưởng thức ngon nhất</div>
-                <p>Phở Thìn Lò Đúc (Hà Nội) hoặc Phở Hòa (TP. Hồ Chí Minh).</p>
-              </div>
-            </div>
-            <div className="dish-image">
-              <img src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=80&w=800" alt="Phở" />
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Experience Section */}
       <section className="experience-section">
         <div className="container">
           <div className="text-center">
@@ -100,7 +189,6 @@ const Cuisine = () => {
           </div>
           
           <div className="bento-grid">
-            {/* Top Left - Large */}
             <div className="bento-card bento-large-tl">
               <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1000" alt="Khóa học nấu ăn" />
               <div className="bento-overlay">
@@ -110,7 +198,6 @@ const Cuisine = () => {
               </div>
             </div>
             
-            {/* Top Right - Small */}
             <div className="bento-card bento-small-tr bento-light">
               <div className="bento-content">
                 <span className="bento-icon">🚶</span>
@@ -120,7 +207,6 @@ const Cuisine = () => {
               </div>
             </div>
             
-            {/* Bottom Left - Small */}
             <div className="bento-card bento-small-bl bento-brown">
               <div className="bento-content">
                 <span className="bento-icon">☕</span>
@@ -130,7 +216,6 @@ const Cuisine = () => {
               </div>
             </div>
             
-            {/* Bottom Right - Large */}
             <div className="bento-card bento-large-br bento-green">
               <div className="bento-content bento-row-layout">
                 <div className="bento-text-part">
@@ -143,7 +228,6 @@ const Cuisine = () => {
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
       </section>

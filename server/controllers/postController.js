@@ -58,3 +58,29 @@ export const togglePostLock = catchAsync(async (req, res) => {
     isPublished: updatedPost.isPublished 
   });
 });
+
+export const search = catchAsync(async (req, res) => {
+  const { q } = req.query;
+  const posts = await postService.searchPosts(q);
+  res.json(posts);
+});
+
+export const save = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  await postService.savePost(id, userId);
+  res.json({ message: 'Đã lưu bài viết thành công.' });
+});
+
+export const unsave = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  await postService.unsavePost(id, userId);
+  res.json({ message: 'Đã bỏ lưu bài viết.' });
+});
+
+export const savedList = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const posts = await postService.getSavedPosts(userId);
+  res.json(posts);
+});

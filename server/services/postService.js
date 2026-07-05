@@ -191,3 +191,63 @@ export const togglePostLock = async (id) => {
     data: { isPublished: !post.isPublished }
   });
 };
+
+export const searchPosts = async (query) => {
+  if (!query || !query.trim()) {
+    return [];
+  }
+  const posts = await prisma.post.findMany({
+    where: {
+      isPublished: true,
+      OR: [
+        { title: { contains: query } },
+        { excerpt: { contains: query } },
+        { content: { contains: query } }
+      ]
+    },
+    include: {
+      author: { select: { fullName: true } },
+      category: { select: { name: true, slug: true } }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+  return posts;
+};
+
+export const savePost = async (postId, userId) => {
+  return await prisma.user.update({
+    where: { id: parseInt(userId) },
+    data: {
+      savedPosts: {
+        connect: { id: parseInt(postId) }
+      }
+    }
+  });
+};
+
+export const unsavePost = async (postId, userId) => {
+  return await prisma.user.update({
+    where: { id: parseInt(userId) },
+    data: {
+      savedPosts: {
+        disconnect: { id: parseInt(postId) }
+      }
+    }
+  });
+};
+
+export const getSavedPosts = async (userId) => {
+  const user = await prisma.user.findUnique({
+    where: { id: parseInt(userId) },
+    select: {
+      savedPosts: {
+        include: {
+          author: { select: { fullName: true } },
+          category: { select: { name: true, slug: true } }
+        },
+        orderBy: { createdAt: 'desc' }
+      }
+    }
+  });
+  return user ? user.savedPosts : [];
+};

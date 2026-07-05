@@ -3,6 +3,18 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import './SearchResults.css';
 
+const decodeHtmlEntities = (str) => {
+  if (!str) return '';
+  return str
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
+};
+
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -10,34 +22,28 @@ const SearchResults = () => {
   const [results, setResults] = useState([]);
 
   useEffect(() => {
-    // Simulate API search call
-    const timer = window.setTimeout(() => {
+    const fetchSearchResults = async () => {
       setIsLoading(true);
-      // Mock data for search
       if (query.trim().length > 0) {
-        setResults([
-          {
-            id: 1,
-            title: `Khám phá vẻ đẹp của ${query}`,
-            excerpt: `Những điều thú vị và bất ngờ đang chờ đón bạn khi khám phá ${query} qua lăng kính của những người đam mê xê dịch.`,
-            category: 'Điểm Đến',
-            image: 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=800'
-          },
-          {
-            id: 2,
-            title: `Câu chuyện văn hóa đằng sau ${query}`,
-            excerpt: `Một góc nhìn sâu sắc hơn về nét đẹp truyền thống và những giá trị cốt lõi làm nên sức hút của ${query}.`,
-            category: 'Văn Hóa',
-            image: 'https://images.unsplash.com/photo-1544078751-58fee26f4bc7?auto=format&fit=crop&q=80&w=800'
+        try {
+          const res = await fetch(`http://localhost:5000/api/posts/search/query?q=${encodeURIComponent(query)}`);
+          if (res.ok) {
+            const data = await res.json();
+            setResults(data);
+          } else {
+            setResults([]);
           }
-        ]);
+        } catch (error) {
+          console.error('Lỗi khi tìm kiếm bài viết:', error);
+          setResults([]);
+        }
       } else {
         setResults([]);
       }
       setIsLoading(false);
-    }, 800);
+    };
 
-    return () => window.clearTimeout(timer);
+    fetchSearchResults();
   }, [query]);
 
   return (
@@ -60,13 +66,13 @@ const SearchResults = () => {
             {results.map(post => (
               <div key={post.id} className="result-card">
                 <div className="result-img">
-                  <img src={post.image} alt={post.title} />
-                  <span className="result-category">{post.category}</span>
+                  <img src={post.imageUrl ? `http://localhost:5000${post.imageUrl}` : 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=800'} alt={post.title} />
+                  <span className="result-category">{post.category?.name}</span>
                 </div>
                 <div className="result-content">
-                  <h3><Link to="/post/demo-slug">{post.title}</Link></h3>
-                  <p>{post.excerpt}</p>
-                  <Link to="/post/demo-slug" className="read-more">Đọc tiếp →</Link>
+                  <h3><Link to={`/post/${post.slug}`}>{post.title}</Link></h3>
+                  <p>{decodeHtmlEntities(post.excerpt)}</p>
+                  <Link to={`/post/${post.slug}`} className="read-more">Đọc tiếp →</Link>
                 </div>
               </div>
             ))}

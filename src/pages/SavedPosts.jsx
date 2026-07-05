@@ -6,36 +6,61 @@ import './SavedPosts.css';
 const SavedPosts = () => {
   const [savedPosts, setSavedPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // In a real app, this would fetch from an API or LocalStorage
-    const timer = setTimeout(() => {
-      setSavedPosts([
-        {
-          id: 1,
-          title: 'Những ngọn đèn lồng cuối cùng ở phố Hội',
-          category: 'Văn Hóa',
-          date: '10/12/2023',
-          image: 'https://images.unsplash.com/photo-1583417646194-672589255ce4?auto=format&fit=crop&q=80&w=600',
-          slug: 'nhung-ngon-den-long-cuoi-cung'
-        },
-        {
-          id: 2,
-          title: 'Gia vị: Linh hồn của bếp Việt',
-          category: 'Ẩm Thực',
-          date: '15/11/2023',
-          image: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=80&w=600',
-          slug: 'gia-vi-linh-hon-bep-viet'
-        }
-      ]);
-      setIsLoading(false);
-    }, 500);
+    const fetchSavedPosts = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Vui lòng đăng nhập để xem danh sách bài viết đã lưu.');
+        setIsLoading(false);
+        return;
+      }
 
-    return () => clearTimeout(timer);
+      try {
+        const res = await fetch('http://localhost:5000/api/posts/saved-list/all', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setSavedPosts(data);
+        } else {
+          setError('Không thể lấy danh sách bài viết đã lưu.');
+        }
+      } catch (err) {
+        console.error('Lỗi tải bài viết đã lưu:', err);
+        setError('Lỗi kết nối máy chủ.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSavedPosts();
   }, []);
 
-  const removePost = (id) => {
-    setSavedPosts(savedPosts.filter(post => post.id !== id));
+  const removePost = async (id) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/posts/${id}/unsave`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (res.ok) {
+        setSavedPosts(savedPosts.filter(post => post.id !== id));
+      } else {
+        alert('Bỏ lưu thất bại. Vui lòng thử lại.');
+      }
+    } catch (err) {
+      alert('Lỗi kết nối.');
+    }
   };
 
   return (
@@ -52,16 +77,23 @@ const SavedPosts = () => {
           <div className="loading-state">
             <div className="spinner"></div>
           </div>
+        ) : error ? (
+          <div className="no-saved-posts">
+            <Bookmark size={48} className="no-saved-icon" />
+            <h2>Yêu cầu đăng nhập</h2>
+            <p>{error}</p>
+            <Link to="/login" className="btn-explore">Đăng nhập ngay</Link>
+          </div>
         ) : savedPosts.length > 0 ? (
           <div className="saved-grid">
             {savedPosts.map(post => (
               <div key={post.id} className="saved-card">
                 <Link to={`/post/${post.slug}`} className="saved-img-link">
-                  <img src={post.image} alt={post.title} />
-                  <span className="saved-category">{post.category}</span>
+                  <img src={post.imageUrl ? `http://localhost:5000${post.imageUrl}` : 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=80&w=600'} alt={post.title} />
+                  <span className="saved-category">{post.category?.name}</span>
                 </Link>
                 <div className="saved-content">
-                  <span className="saved-date">{post.date}</span>
+                  <span className="saved-date">{new Date(post.createdAt).toLocaleDateString('vi-VN')}</span>
                   <h3><Link to={`/post/${post.slug}`}>{post.title}</Link></h3>
                   <div className="saved-actions">
                     <Link to={`/post/${post.slug}`} className="read-more">Đọc ngay →</Link>

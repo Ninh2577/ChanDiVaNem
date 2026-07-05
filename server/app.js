@@ -9,6 +9,8 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import navigationRoutes from './routes/navigationRoutes.js';
 import siteContentRoutes from './routes/siteContentRoutes.js';
 import adRoutes from './routes/adRoutes.js';
+import commentRoutes from './routes/commentRoutes.js';
+import ratingRoutes from './routes/ratingRoutes.js';
 import { globalErrorHandler } from './middleware/errorMiddleware.js';
 import AppError from './utils/AppError.js';
 import path from 'path';
@@ -36,6 +38,8 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/navigation', navigationRoutes);
 app.use('/api/site-content', siteContentRoutes);
 app.use('/api/ads', adRoutes);
+app.use('/api/comments', commentRoutes);
+app.use('/api/ratings', ratingRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running smoothly' });
