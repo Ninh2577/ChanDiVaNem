@@ -1,19 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Pagination from '../components/Pagination';
 import './AdminTable.css';
 
 const AdminPosts = () => {
   const [posts, setPosts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit] = useState(8);
+  const [status, setStatus] = useState('all');
+  const [categoryId, setCategoryId] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Lấy danh sách danh mục để làm bộ lọc
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/categories');
+      if (res.ok) {
+        setCategories(await res.json());
+      }
+    } catch (error) {
+      console.error('Lỗi tải danh mục:', error);
+    }
+  };
 
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/posts');
+      let url = `http://localhost:5000/api/posts?page=${page}&limit=${limit}`;
+      if (status !== 'all') {
+        url += `&status=${status}`;
+      }
+      if (categoryId) {
+        url += `&categoryId=${categoryId}`;
+      }
+      
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
-        setPosts(data);
+        setPosts(data.posts || []);
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages || 1);
+        }
       }
     } catch (error) {
       console.error('Lỗi khi lấy danh sách bài viết:', error);
@@ -23,11 +54,12 @@ const AdminPosts = () => {
   };
 
   useEffect(() => {
-    const fetchTimer = window.setTimeout(() => {
-      void fetchPosts();
-    }, 0);
-    return () => window.clearTimeout(fetchTimer);
+    fetchCategories();
   }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [page, status, categoryId]);
 
   const handleTogglePublish = async (id) => {
     try {
@@ -73,6 +105,12 @@ const AdminPosts = () => {
     }
   };
 
+  // Lọc bài viết theo ô tìm kiếm phía client
+  const filteredPosts = posts.filter(post => 
+    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.author.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="admin-page">
       <div className="admin-page-header">
@@ -88,15 +126,32 @@ const AdminPosts = () => {
       <div className="admin-card">
         <div className="table-toolbar">
           <div className="tabs">
-            <button className="tab-btn active">Tất cả</button>
-            <button className="tab-btn">Đã xuất bản</button>
-            <button className="tab-btn">Chờ duyệt</button>
+            <button className={`tab-btn ${status === 'all' ? 'active' : ''}`} onClick={() => { setStatus('all'); setPage(1); }}>Tất cả</button>
+            <button className={`tab-btn ${status === 'published' ? 'active' : ''}`} onClick={() => { setStatus('published'); setPage(1); }}>Đã xuất bản</button>
+            <button className={`tab-btn ${status === 'pending' ? 'active' : ''}`} onClick={() => { setStatus('pending'); setPage(1); }}>Chờ duyệt</button>
           </div>
           
-          <div className="toolbar-actions">
+          <div className="toolbar-actions" style={{ display: 'flex', gap: '10px' }}>
+            <select 
+              value={categoryId} 
+              onChange={(e) => { setCategoryId(e.target.value); setPage(1); }}
+              className="filter-select"
+              style={{ padding: '6px 12px', border: '1px solid #cbd5e0', borderRadius: '6px', fontSize: '14px', outline: 'none' }}
+            >
+              <option value="">Lọc theo Danh mục</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+
             <div className="search-box">
               <Search size={16} />
-              <input type="text" placeholder="Tìm kiếm bài viết..." />
+              <input 
+                type="text" 
+                placeholder="Tìm kiếm bài viết..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -116,10 +171,10 @@ const AdminPosts = () => {
             <tbody>
               {loading ? (
                 <tr><td colSpan="6" className="text-center py-8">Đang tải bài viết...</td></tr>
-              ) : posts.length === 0 ? (
-                <tr><td colSpan="6" className="text-center empty-state">Chưa có bài viết nào.</td></tr>
+              ) : filteredPosts.length === 0 ? (
+                <tr><td colSpan="6" className="text-center empty-state">Chưa có bài viết nào phù hợp.</td></tr>
               ) : (
-                posts.map(post => (
+                filteredPosts.map(post => (
                   <tr key={post.id}>
                     <td className="font-medium max-w-xs truncate" title={post.title}>
                       {post.title}
@@ -152,6 +207,12 @@ const AdminPosts = () => {
             </tbody>
           </table>
         </div>
+
+        <Pagination 
+          currentPage={page} 
+          totalPages={totalPages} 
+          onPageChange={(p) => setPage(p)} 
+        />
       </div>
     </div>
   );

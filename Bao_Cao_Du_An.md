@@ -7,9 +7,9 @@
 **Chân Đi Và Nếm** là một nền tảng Web Fullstack hoạt động theo mô hình CMS (Content Management System) kết hợp Blog chuyên sâu về văn hóa, ẩm thực, địa danh và phong cảnh Việt Nam. Mục tiêu của dự án là gìn giữ, tôn vinh và quảng bá các giá trị di sản hữu hình và vô hình của Việt Nam thông qua những bài viết nghệ thuật chất lượng cao, hình ảnh sống động và trải nghiệm trực quan.
 
 Hệ thống được thiết kế tối ưu hóa cho 3 nhóm đối tượng:
-1. **Độc giả (Reader)**: Tìm đọc nội dung du lịch, văn hóa, ẩm thực, lưu trữ các bài viết yêu thích, bình luận và đánh giá bài viết.
-2. **Cộng tác viên (CTV/Tác giả)**: Viết và biên tập bài viết bằng trình soạn thảo Rich Text, quản lý bài viết cá nhân và gửi yêu cầu phê duyệt đến quản trị viên.
-3. **Quản trị viên (Admin)**: Quản lý toàn bộ bài viết, kiểm duyệt nội dung, quản lý người dùng và cấp quyền, tùy chỉnh sơ đồ menu điều hướng động, thiết lập nội dung tĩnh (CMS các trang About/Homepage), và quản lý các chiến dịch quảng cáo (Ad Campaigns) kèm thống kê doanh thu/click chuột.
+1. **Độc giả (Reader)**: Tìm đọc nội dung du lịch, văn hóa, ẩm thực; bình luận, đánh giá bài viết; lưu trữ bài viết yêu thích; đăng ký nhận bản tin.
+2. **Cộng tác viên (CTV/Tác giả)**: Viết và biên tập bài viết bằng trình soạn thảo Rich Text, quản lý bài viết cá nhân, xem thống kê hiệu suất bài viết của bản thân.
+3. **Quản trị viên (Admin)**: Quản lý toàn bộ bài viết (kiểm duyệt, ẩn/khóa, nổi bật), quản lý người dùng & phân quyền, chỉnh sửa động thanh điều hướng (Navigation Menu), CMS cấu hình nội dung tĩnh toàn trang, thiết lập & theo dõi doanh thu các chiến dịch quảng cáo.
 
 ---
 
@@ -133,10 +133,12 @@ erDiagram
    * Chứa các trường phục vụ SEO: `metaTitle`, `metaDesc`, `canonicalUrl`, và `thumbnailAlt`.
    * Trạng thái quản lý: `isFeatured` (Bài viết nổi bật), `isPublished` (Xuất bản / Ẩn khóa).
    * Lượt xem bài viết (`viewCount`).
-5. **Comment (Bình luận)**:
-   * Hỗ trợ bình luận lồng nhau đa cấp (Nested/Reply) bằng liên kết tự tham chiếu `parentId` trỏ về Comment gốc.
-6. **Rating (Đánh giá)**:
-   * Ràng buộc duy nhất `@@unique([userId, postId])` đảm bảo mỗi độc giả chỉ được chấm điểm (1 đến 5 sao) cho một bài viết một lần duy nhất.
+5. **Comment (Bình luận)** *(Đã kết nối dữ liệu thật ở Giai đoạn 4)*:
+   * Lưu nội dung phản hồi của độc giả.
+   * Hỗ trợ bình luận lồng nhau đa cấp (Nested/Reply) bằng liên kết tự tham chiếu `parentId` trỏ về Comment cha.
+6. **Rating (Đánh giá)** *(Đã kết nối dữ liệu thật ở Giai đoạn 4)*:
+   * Đánh giá chất lượng bài viết theo thang điểm từ 1 đến 5.
+   * Ràng buộc duy nhất `@@unique([userId, postId])` đảm bảo mỗi độc giả chỉ được chấm điểm một bài viết một lần duy nhất.
 7. **NewsletterSubscriber (Đăng ký Bản tin)**:
    * Lưu trữ các email đăng ký để nhận thông tin cập nhật mới nhất.
 8. **ContributorApplication (Đơn Ứng Tuyển CTV)**:
@@ -156,14 +158,15 @@ Hệ thống được phát triển các phân hệ nghiệp vụ tương thích
 
 ### 4.1. Giao Diện Người Dùng & Độc Giả (Client Site)
 * **Trang chủ (Home)**: Hiển thị Hero banner, các bài viết nổi bật (Featured Posts), bài viết mới nhất phân nhóm theo các mục Ẩm thực, Điểm đến, Văn hóa. Banner quảng cáo chạy tự động.
-* **Trang chuyên mục (Culture, Destinations, Cuisine)**: Phân loại bài viết theo chủ đề cụ thể, lọc nội dung.
+* **Trang chuyên mục (Culture, Destinations, Cuisine)**: Phân loại bài viết theo chủ đề cụ thể, lọc nội dung động kết nối từ Database.
 * **Đọc bài viết chi tiết (Post Detail)**: Hiển thị giao diện bài viết chuẩn SEO, tích hợp chức năng:
-  * Đánh giá chất lượng bài viết (Rating 1-5 sao).
-  * Viết bình luận và trả lời bình luận của độc giả khác (Nested Comments).
-  * Đánh dấu lưu trữ bài viết để xem lại sau (Saved Posts).
+  * **Đếm lượt xem (View count)**: Tăng tự động khi độc giả truy cập bài viết.
+  * **Đánh giá chất lượng bài viết (Rating)** *(Đã hoàn thiện)*: Cho phép người dùng đánh giá sao (1-5) bằng cơ chế tương tác trực quan. Hệ thống sẽ tự động cập nhật nếu người dùng thay đổi số sao đã đánh giá trước đó (sử dụng Prisma Upsert). Hiển thị điểm số trung bình và số lượt đánh giá tổng quan.
+  * **Bình luận lồng nhau (Nested Comments)** *(Đã hoàn thiện)*: Độc giả đăng nhập có thể viết bình luận hoặc trả lời (reply) trực tiếp dưới một bình luận khác. Khi xóa một bình luận cha, hệ thống tự động dọn dẹp các bình luận con để tránh lỗi liên kết dữ liệu.
+  * **Đánh dấu lưu trữ bài viết (Saved Posts / Bookmark)** *(Đã hoàn thiện)*: Cho phép lưu trữ nhanh bài viết và xem lại trong trang quản lý cá nhân `SavedPosts.jsx`.
 * **Đăng ký Newsletter**: Form đăng ký email nhanh gọn ở phần Footer và trang chuyên biệt giúp tăng tương tác của độc giả.
 * **Đăng ký Cộng tác viên**: Độc giả có thể điền đơn ứng tuyển CTV, cung cấp liên kết Portfolio và kinh nghiệm viết lách để gửi lên Ban quản trị.
-* **Tìm kiếm nâng cao**: Thanh tìm kiếm trực quan trên Header hỗ trợ tìm kiếm bài viết theo từ khóa tiêu đề hoặc tóm tắt.
+* **Tìm kiếm nâng cao** *(Đã hoàn thiện)*: Tích hợp thanh tìm kiếm trực quan trên Header, hỗ trợ tìm kiếm toàn văn theo từ khóa và hiển thị kết quả động tại trang `SearchResults.jsx`.
 
 ### 4.2. Giao Diện Cộng Tác Viên (CTV Panel)
 * **Dashboard CTV**: Hiển thị nhanh số lượng bài viết cá nhân đã đăng, tổng số lượt xem bài viết của mình, và biểu đồ hiệu suất.
@@ -192,25 +195,39 @@ Mọi yêu cầu từ Frontend đều được ánh xạ về Backend thông qua
 ### 5.2. Quản lý Bài viết (`/api/posts`)
 * `GET /`: Lấy toàn bộ bài viết (có bộ lọc).
 * `GET /published`: Lấy danh sách bài viết đã xuất bản công khai.
+* `GET /search/query`: Tìm kiếm bài viết theo từ khóa `?q=keyword` *(Mới cập nhật)*.
 * `GET /detail/:id`: Lấy chi tiết bài viết theo ID.
 * `GET /:slug`: Lấy chi tiết bài viết theo Slug phục vụ SEO URL.
+* `GET /saved-list/all` (Yêu cầu đăng nhập): Lấy danh sách bài viết đã lưu của user đăng nhập *(Mới cập nhật)*.
+* `POST /:id/save` (Yêu cầu đăng nhập): Đánh dấu lưu bài viết *(Mới cập nhật)*.
+* `DELETE /:id/unsave` (Yêu cầu đăng nhập): Hủy lưu bài viết *(Mới cập nhật)*.
 * `POST /` (Yêu cầu quyền CTV/Admin): Tạo bài viết mới.
 * `PUT /:id` (Yêu cầu quyền CTV/Admin): Cập nhật bài viết.
 * `DELETE /:id` (Yêu cầu quyền Admin): Xóa bài viết vĩnh viễn.
 * `PATCH /:id/toggle-lock` (Yêu cầu quyền Admin): Khóa hoặc mở khóa xuất bản bài viết.
 
-### 5.3. Quản lý Chuyên mục (`/api/categories`)
+### 5.3. Hệ thống Bình luận (`/api/comments`) *(Mới cập nhật ở Giai đoạn 4)*
+* `GET /post/:postId`: Lấy danh sách tất cả bình luận của một bài viết (bao gồm cả thông tin tác giả bình luận).
+* `POST /` (Yêu cầu đăng nhập): Đăng bình luận hoặc trả lời bình luận (`postId`, `content`, `parentId`).
+* `DELETE /:id` (Yêu cầu đăng nhập): Xóa bình luận. Chỉ cho phép chủ nhân bình luận hoặc Admin xóa. Hệ thống tự động xóa các câu trả lời trực tiếp của bình luận này trước khi xóa bản thân nó.
+
+### 5.4. Hệ thống Đánh giá (`/api/ratings`) *(Mới cập nhật ở Giai đoạn 4)*
+* `GET /post/:postId/stats`: Lấy thống kê số lượng đánh giá và điểm số trung bình của bài viết.
+* `GET /post/:postId/user` (Yêu cầu đăng nhập): Lấy điểm số đánh giá của người dùng hiện tại đối với bài viết.
+* `POST /` (Yêu cầu đăng nhập): Gửi đánh giá sao (`postId`, `score` từ 1-5). Sử dụng cơ chế Upsert cập nhật lại điểm số nếu đã từng đánh giá.
+
+### 5.5. Quản lý Chuyên mục (`/api/categories`)
 * `GET /`: Lấy danh sách tất cả các danh mục.
 * `POST /` (Yêu cầu quyền Admin): Tạo mới danh mục.
 * `PUT /:id` (Yêu cầu quyền Admin): Cập nhật thông tin danh mục.
 * `DELETE /:id` (Yêu cầu quyền Admin): Xóa danh mục.
 
-### 5.4. Đơn Ứng Tuyển CTV (`/api/applications`)
+### 5.6. Đơn Ứng Tuyển CTV (`/api/applications`)
 * `POST /`: Độc giả gửi đơn đăng ký làm CTV.
 * `GET /` (Yêu cầu quyền Admin): Admin lấy danh sách các đơn đã nộp.
 * `PATCH /:id/status` (Yêu cầu quyền Admin): Duyệt/Từ chối đơn ứng tuyển.
 
-### 5.5. Quản trị Menu Điều Hướng (`/api/navigation`)
+### 5.7. Quản trị Menu Điều Hướng (`/api/navigation`)
 * `GET /`: Lấy sơ đồ menu hiện tại đang hoạt động.
 * `PUT /` (Yêu cầu quyền Admin): Cập nhật cấu trúc menu.
 * `POST /root` (Yêu cầu quyền Admin): Thêm một menu gốc mới.
@@ -219,7 +236,7 @@ Mọi yêu cầu từ Frontend đều được ánh xạ về Backend thông qua
 * `PATCH /:id` (Yêu cầu quyền Admin): Thay đổi thông tin menu.
 * `DELETE /:id` (Yêu cầu quyền Admin): Xóa bỏ mục menu.
 
-### 5.6. Quản trị Chiến Dịch Quảng Cáo (`/api/ads`)
+### 5.8. Quản trị Chiến Dịch Quảng Cáo (`/api/ads`)
 * `GET /active`: Lấy các quảng cáo đang chạy theo thời gian thực (được lọc theo ngày hiện tại và trạng thái kích hoạt).
 * `POST /:id/view`: Tăng biến đếm lượt xem quảng cáo thêm 1 đơn vị.
 * `POST /:id/click`: Tăng biến đếm lượt nhấp chuột quảng cáo thêm 1 đơn vị.
@@ -228,7 +245,7 @@ Mọi yêu cầu từ Frontend đều được ánh xạ về Backend thông qua
 * `PUT /:id` (Yêu cầu quyền Admin): Cập nhật chiến dịch.
 * `DELETE /:id` (Yêu cầu quyền Admin): Xóa chiến dịch quảng cáo.
 
-### 5.7. Quản lý File Ảnh (`/api/upload`)
+### 5.9. Quản lý File Ảnh (`/api/upload`)
 * `POST /` (Yêu cầu đăng nhập): Nhận file ảnh qua multipart/form-data bằng Multer, lưu trữ trong thư mục `/server/uploads` và trả về URL ảnh công khai `/uploads/filename`.
 
 ---
@@ -248,9 +265,33 @@ CHANDIVANEM/
 ├── server/                  # Mã nguồn Backend (Express.js)
 │   ├── config/              # Khởi tạo kết nối (Prisma client)
 │   ├── controllers/         # Bộ điều hướng logic nghiệp vụ API
+│   │   ├── adController.js
+│   │   ├── applicationController.js
+│   │   ├── authController.js
+│   │   ├── categoryController.js
+│   │   ├── commentController.js     # Mới thêm ở Giai đoạn 4
+│   │   ├── navigationController.js
+│   │   ├── postController.js
+│   │   ├── ratingController.js      # Mới thêm ở Giai đoạn 4
+│   │   ├── siteContentController.js
+│   │   └── userController.js
 │   ├── middleware/          # Các bộ lọc trung gian (Auth, Error handling)
 │   ├── routes/              # Khai báo định tuyến endpoint API
-│   ├── services/            # Tách biệt logic nghiệp vụ phức tạp (nếu có)
+│   │   ├── adRoutes.js
+│   │   ├── applicationRoutes.js
+│   │   ├── authRoutes.js
+│   │   ├── categoryRoutes.js
+│   │   ├── commentRoutes.js         # Mới thêm ở Giai đoạn 4
+│   │   ├── navigationRoutes.js
+│   │   ├── postRoutes.js
+│   │   ├── ratingRoutes.js          # Mới thêm ở Giai đoạn 4
+│   │   ├── siteContentRoutes.js
+│   │   ├── uploadRoutes.js
+│   │   └── userRoutes.js
+│   ├── services/            # Tách biệt logic nghiệp vụ phức tạp
+│   │   ├── commentService.js        # Mới thêm ở Giai đoạn 4
+│   │   ├── ratingService.js         # Mới thêm ở Giai đoạn 4
+│   │   └── postService.js
 │   ├── uploads/             # Thư mục lưu trữ hình ảnh tải lên thực tế
 │   ├── utils/               # Các hàm tiện ích, định nghĩa lỗi AppError
 │   ├── app.js               # Cấu hình Express app & Middlewares
@@ -307,7 +348,7 @@ CHANDIVANEM/
   ```bash
   npm run dev
   ```
-* Trình duyệt sẽ tự động mở trang chủ Frontend tại địa chỉ: `http://localhost:5173` (hoặc cổng rảnh tiếp theo).
+* Trình duyệt sẽ tự động mở trang chủ Frontend tại địa chỉ: `http://localhost:5173`.
 * Backend API hoạt động tại: `http://localhost:5000`.
 
 ---
@@ -315,11 +356,11 @@ CHANDIVANEM/
 ## 8. Các Tính Năng Điểm Nhấn & Định Hướng Phát Triển
 
 ### 8.1. Các điểm sáng kỹ thuật trong dự án
-1. **Hệ thống Menu động nâng cao**: Thay vì viết cứng (hardcode) các liên kết điều hướng, Admin có thể dễ dàng thay đổi cấu trúc menu Header ngay trên UI, hỗ trợ phân cấp 2 tầng và cập nhật trực tiếp xuống Database.
-2. **Theo dõi Hiệu năng Quảng cáo (Ad Tracking)**: Cơ chế thu thập số liệu lượt hiển thị và nhấp chuột tự động tích hợp ngầm ở Client giúp người quản trị dễ dàng tính toán ROI (tỷ suất lợi nhuận) cho đối tác quảng cáo của blog.
-3. **CMS Nội dung tĩnh linh hoạt**: Toàn bộ nội dung trang giới thiệu (About) đều được lưu trữ dưới dạng JSON, giúp quản trị viên có thể đổi ảnh, sửa tiêu đề, đổi nội dung thương hiệu mà không cần nhờ đến lập trình viên sửa code.
+1. **Hệ thống Bình luận & Đánh giá Tương tác Thời gian thực**: Triển khai tối ưu với cơ chế lồng nhau (Nested comments) xử lý đệ quy/cascaded delete an toàn ở database và giao diện chọn đánh giá sao linh hoạt sử dụng kỹ thuật Prisma Upsert hiệu quả.
+2. **Menu động (Dynamic Navigation Menu)**: Hỗ trợ người dùng kéo thả, cập nhật trạng thái menu ngay trên UI thay vì viết cứng mã HTML.
+3. **Theo dõi quảng cáo (Ad Performance Tracking)**: Ghi nhận view/click độc lập theo phiên sử dụng để phân tích doanh thu và ROI hiệu quả.
 
 ### 8.2. Định hướng mở rộng tương lai
-* **Tích hợp bộ nhớ đệm (Caching)**: Sử dụng Redis ở Backend để lưu các bài viết nhiều lượt xem hoặc sơ đồ menu động, giảm tải tối đa cho MySQL.
-* **Tối ưu hóa SEO nâng cao**: Áp dụng Server-Side Rendering (SSR) bằng Next.js thay thế cho Single Page Application (SPA) hiện tại để bot tìm kiếm Google cào bài viết tốt hơn.
-* **Quản trị Bình luận thông minh**: Bổ sung bộ lọc từ cấm, tự động ẩn bình luận chứa từ ngữ thô tục hoặc spam quảng cáo bằng AI đơn giản.
+* **Tích hợp bộ nhớ đệm (Caching)**: Sử dụng Redis để lưu cache các bài viết nhiều lượt xem hoặc menu động giúp giảm truy vấn MySQL.
+* **SEO Server-Side Rendering (SSR)**: Chuyển đổi một phần sang Next.js giúp tăng tốc index bài viết trên các bộ máy tìm kiếm (Google, Bing).
+* **Kiểm duyệt bình luận bằng AI**: Tích hợp các bộ lọc từ ngữ thô tục hoặc spam tự động để giữ gìn không gian thảo luận văn minh.

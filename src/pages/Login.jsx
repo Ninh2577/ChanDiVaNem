@@ -97,7 +97,7 @@ const Login = () => {
               <div className="auth-group">
                 <div className="label-flex">
                   <label>Mật khẩu</label>
-                  <a href="#" className="forgot-link">Quên mật khẩu?</a>
+                  <Link to="/forgot-password" className="forgot-link">Quên mật khẩu?</Link>
                 </div>
                 <div className="input-with-icon">
                   <Lock size={18} className="input-icon" />

@@ -1,26 +1,66 @@
 import prisma from '../config/db.js';
 import AppError from '../utils/AppError.js';
+import DOMPurify from 'isomorphic-dompurify';
 
-export const getCommentsForPost = async (postId) => {
-  return await prisma.comment.findMany({
-    where: { postId: parseInt(postId) },
-    include: {
-      author: {
-        select: {
-          id: true,
-          fullName: true,
-          avatarUrl: true
+export const getCommentsForPost = async (postId, { page = 1, limit = 10 } = {}) => {
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const [rootComments, total] = await Promise.all([
+    prisma.comment.findMany({
+      where: {
+        postId: parseInt(postId),
+        parentId: null
+      },
+      skip,
+      take: Number(limit),
+      include: {
+        author: {
+          select: {
+            id: true,
+            fullName: true,
+            avatarUrl: true
+          }
+        },
+        replies: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                fullName: true,
+                avatarUrl: true
+              }
+            }
+          },
+          orderBy: { createdAt: 'asc' }
         }
+      },
+      orderBy: { createdAt: 'asc' }
+    }),
+    prisma.comment.count({
+      where: {
+        postId: parseInt(postId),
+        parentId: null
       }
-    },
-    orderBy: { createdAt: 'asc' }
-  });
+    })
+  ]);
+
+  return {
+    comments: rootComments,
+    pagination: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / limit)
+    }
+  };
 };
 
 export const createComment = async ({ postId, authorId, content, parentId }) => {
   if (!content || !content.trim()) {
     throw new AppError('Nội dung bình luận không được để trống.', 400);
   }
+
+  const cleanContent = DOMPurify.sanitize(content, { ALLOWED_TAGS: [] });
 
   if (parentId) {
     const parentComment = await prisma.comment.findUnique({
@@ -33,7 +73,7 @@ export const createComment = async ({ postId, authorId, content, parentId }) => 
 
   return await prisma.comment.create({
     data: {
-      content,
+      content: cleanContent,
       postId: parseInt(postId),
       authorId: parseInt(authorId),
       parentId: parentId ? parseInt(parentId) : null

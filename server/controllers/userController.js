@@ -2,8 +2,9 @@ import catchAsync from '../utils/catchAsync.js';
 import * as userService from '../services/userService.js';
 
 export const getUsers = catchAsync(async (req, res) => {
-  const users = await userService.getUsers();
-  res.json(users);
+  const { page, limit, role } = req.query;
+  const result = await userService.getUsers({ page, limit, role });
+  res.json(result);
 });
 
 export const deleteUser = catchAsync(async (req, res) => {
@@ -19,4 +20,10 @@ export const getUserProfile = catchAsync(async (req, res) => {
     return res.status(404).json({ message: 'Không tìm thấy tác giả này.' });
   }
   res.json(user);
+});
+
+export const getAuthorProfile = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const author = await userService.getAuthorProfile(id);
+  res.json(author);
 });

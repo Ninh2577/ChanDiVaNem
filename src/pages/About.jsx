@@ -24,6 +24,16 @@ const About = () => {
   const [data, setData] = useState(DEFAULT_ABOUT);
 
   useEffect(() => {
+    // Tối ưu SEO cho trang Về chúng tôi
+    document.title = "Về chúng tôi - Sứ mệnh Chân Đi Và Nếm | Chân Đi Và Nếm";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = "Tìm hiểu về lịch sử hình thành, tầm nhìn chiến lược và sứ mệnh bảo tồn, lan tỏa các giá trị văn hóa nghệ thuật Việt Nam của chúng tôi.";
+
     fetch(`${API}/api/site-content/page_about`)
       .then(res => res.ok ? res.json() : null)
       .then(resData => {

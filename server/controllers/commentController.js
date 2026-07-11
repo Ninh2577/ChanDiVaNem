@@ -3,8 +3,9 @@ import * as commentService from '../services/commentService.js';
 
 export const getComments = catchAsync(async (req, res) => {
   const { postId } = req.params;
-  const comments = await commentService.getCommentsForPost(postId);
-  res.json(comments);
+  const { page, limit } = req.query;
+  const result = await commentService.getCommentsForPost(postId, { page, limit });
+  res.json(result);
 });
 
 export const addComment = catchAsync(async (req, res) => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Eye, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import { fetchWithAuth } from '../utils/api';
+import Pagination from '../components/Pagination';
 import './AdminTable.css';
 
 const AdminUsers = () => {
@@ -8,31 +9,57 @@ const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch dữ liệu từ API
-  const fetchData = async () => {
+  // Các state phân trang
+  const [userPage, setUserPage] = useState(1);
+  const [userTotalPages, setUserTotalPages] = useState(1);
+  const [appPage, setAppPage] = useState(1);
+  const [appTotalPages, setAppTotalPages] = useState(1);
+
+  // Tải danh sách người dùng
+  const fetchUsers = async () => {
     setLoading(true);
     try {
-      const [usersRes, appsRes] = await Promise.all([
-        fetchWithAuth('http://localhost:5000/api/users'),
-        fetchWithAuth('http://localhost:5000/api/applications')
-      ]);
-      
-      if (usersRes.ok) setUsers(await usersRes.json());
-      if (appsRes.ok) setApplications(await appsRes.json());
+      const roleParam = activeTab === 'contributor' ? 'CTV' : 'all';
+      const res = await fetchWithAuth(`http://localhost:5000/api/users?page=${userPage}&limit=10&role=${roleParam}`);
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data.users || []);
+        setUserTotalPages(data.pagination?.totalPages || 1);
+      }
     } catch (error) {
-      console.error('Lỗi khi tải dữ liệu:', error);
+      console.error('Lỗi tải người dùng:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Tải danh sách đơn ứng tuyển (chỉ lấy PENDING)
+  const fetchApplications = async () => {
+    setLoading(true);
+    try {
+      const res = await fetchWithAuth(`http://localhost:5000/api/applications?page=${appPage}&limit=10&status=PENDING`);
+      if (res.ok) {
+        const data = await res.json();
+        setApplications(data.applications || []);
+        setAppTotalPages(data.pagination?.totalPages || 1);
+      }
+    } catch (error) {
+      console.error('Lỗi tải đơn ứng tuyển:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Gọi API phù hợp theo Tab đang hiển thị
   useEffect(() => {
-    const fetchTimer = window.setTimeout(() => {
-      void fetchData();
-    }, 0);
-    return () => window.clearTimeout(fetchTimer);
-  }, []);
+    if (activeTab === 'pending') {
+      fetchApplications();
+    } else {
+      fetchUsers();
+    }
+  }, [activeTab, userPage, appPage]);
 
   const handleApproveCTV = async (id) => {
     if(window.confirm('Bạn có chắc chắn cấp quyền Cộng Tác Viên cho người dùng này?')) {
@@ -42,8 +69,12 @@ const AdminUsers = () => {
           body: JSON.stringify({ status: 'APPROVED' })
         });
         if (res.ok) {
-          alert('Đã cấp quyền CTV thành công! Một tài khoản mới đã được tạo với mật khẩu: Ctv123456@');
-          fetchData(); // Tải lại danh sách
+          alert('Đã cấp quyền CTV thành công! Một tài khoản mới đã được tạo với mật khẩu mặc định.');
+          if (activeTab === 'pending') {
+            fetchApplications();
+          } else {
+            fetchUsers();
+          }
         }
       } catch {
         alert('Lỗi kết nối máy chủ!');
@@ -59,7 +90,7 @@ const AdminUsers = () => {
           body: JSON.stringify({ status: 'REJECTED' })
         });
         if (res.ok) {
-          fetchData();
+          fetchApplications();
         }
       } catch {
         alert('Lỗi kết nối máy chủ!');
@@ -74,7 +105,7 @@ const AdminUsers = () => {
           method: 'DELETE'
         });
         if (res.ok) {
-          fetchData();
+          fetchUsers();
         }
       } catch {
         alert('Lỗi kết nối máy chủ!');
@@ -82,10 +113,10 @@ const AdminUsers = () => {
     }
   };
 
-  // Tính toán dữ liệu hiển thị dựa trên Tab
+  // Chuẩn hóa dữ liệu hiển thị phù hợp giao diện cũ
   const getDisplayData = () => {
     if (activeTab === 'pending') {
-      return applications.filter(app => app.status === 'PENDING').map(app => ({
+      return applications.map(app => ({
         ...app,
         type: 'application',
         name: app.fullName,
@@ -93,12 +124,7 @@ const AdminUsers = () => {
       }));
     }
     
-    let filteredUsers = users;
-    if (activeTab === 'contributor') {
-      filteredUsers = users.filter(user => user.role === 'CTV');
-    }
-    
-    return filteredUsers.map(user => ({
+    return users.map(user => ({
       ...user,
       type: 'user',
       name: user.fullName,
@@ -107,7 +133,12 @@ const AdminUsers = () => {
   };
 
   const displayData = getDisplayData();
-  const pendingCount = applications.filter(a => a.status === 'PENDING').length;
+
+  // Lọc dữ liệu client theo ô tìm kiếm
+  const filteredData = displayData.filter(item => 
+    (item.name && item.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (item.email && item.email.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   return (
     <div className="admin-page">
@@ -121,15 +152,20 @@ const AdminUsers = () => {
       <div className="admin-card">
         <div className="table-toolbar">
           <div className="tabs">
-            <button className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>Tất cả</button>
-            <button className={`tab-btn ${activeTab === 'contributor' ? 'active' : ''}`} onClick={() => setActiveTab('contributor')}>Cộng Tác Viên</button>
-            <button className={`tab-btn ${activeTab === 'pending' ? 'active' : ''}`} onClick={() => setActiveTab('pending')}>Đơn ứng tuyển CTV {pendingCount > 0 && <span className="tab-badge warning-bg">{pendingCount}</span>}</button>
+            <button className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`} onClick={() => { setActiveTab('all'); setUserPage(1); }}>Tất cả</button>
+            <button className={`tab-btn ${activeTab === 'contributor' ? 'active' : ''}`} onClick={() => { setActiveTab('contributor'); setUserPage(1); }}>Cộng Tác Viên</button>
+            <button className={`tab-btn ${activeTab === 'pending' ? 'active' : ''}`} onClick={() => { setActiveTab('pending'); setAppPage(1); }}>Đơn ứng tuyển CTV</button>
           </div>
           
           <div className="toolbar-actions">
             <div className="search-box">
               <Search size={16} />
-              <input type="text" placeholder="Tìm kiếm..." />
+              <input 
+                type="text" 
+                placeholder="Tìm kiếm..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -148,10 +184,10 @@ const AdminUsers = () => {
             <tbody>
               {loading ? (
                 <tr><td colSpan="5" className="text-center py-8">Đang tải dữ liệu...</td></tr>
-              ) : displayData.length === 0 ? (
+              ) : filteredData.length === 0 ? (
                 <tr><td colSpan="5" className="text-center empty-state">Không có dữ liệu nào.</td></tr>
               ) : (
-                displayData.map(item => (
+                filteredData.map(item => (
                   <tr key={`${item.type}-${item.id}`}>
                     <td className="font-medium">
                       <div className="user-name-cell">
@@ -190,6 +226,20 @@ const AdminUsers = () => {
             </tbody>
           </table>
         </div>
+
+        {activeTab === 'pending' ? (
+          <Pagination 
+            currentPage={appPage} 
+            totalPages={appTotalPages} 
+            onPageChange={(p) => setAppPage(p)} 
+          />
+        ) : (
+          <Pagination 
+            currentPage={userPage} 
+            totalPages={userTotalPages} 
+            onPageChange={(p) => setUserPage(p)} 
+          />
+        )}
       </div>
     </div>
   );

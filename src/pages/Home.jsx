@@ -57,6 +57,16 @@ const Home = () => {
   const [culture, setCulture] = useState({ sectionTitle: 'Góc Nhìn Văn Hóa', featuredPostIds: [] });
 
   useEffect(() => {
+    // Tối ưu SEO cho Trang Chủ
+    document.title = "Chân Đi Và Nếm - Blog Du lịch, Ẩm thực & Di sản Việt Nam";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = "Khám phá bản sắc Việt qua những hành trình trải nghiệm điểm đến kỳ vĩ, hương vị ẩm thực truyền thống độc đáo và những câu chuyện di sản văn hóa sâu sắc.";
+
     // 1. Lấy nội dung CMS trang chủ trước để biết có bài nào được xếp hạng không
     fetch(`${API}/api/site-content`)
       .then(r => r.ok ? r.json() : null)

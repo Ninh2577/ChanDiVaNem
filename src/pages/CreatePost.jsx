@@ -14,6 +14,8 @@ const CreatePost = () => {
   const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedTagIds, setSelectedTagIds] = useState([]);
   const [imageUrl, setImageUrl] = useState('');
   const [thumbnailAlt, setThumbnailAlt] = useState('');
   
@@ -27,20 +29,22 @@ const CreatePost = () => {
   const [isLoadingPost, setIsLoadingPost] = useState(isEditMode);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  // Lấy danh mục
+  // Lấy danh mục và thẻ tag
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchInitData = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/categories');
-        if (res.ok) {
-          const data = await res.json();
-          setCategories(data);
-        }
+        const [catRes, tagRes] = await Promise.all([
+          fetch('http://localhost:5000/api/categories'),
+          fetch('http://localhost:5000/api/tags')
+        ]);
+        
+        if (catRes.ok) setCategories(await catRes.json());
+        if (tagRes.ok) setTags(await tagRes.json());
       } catch (error) {
-        console.error('Lỗi lấy danh mục:', error);
+        console.error('Lỗi tải dữ liệu khởi tạo:', error);
       }
     };
-    fetchCategories();
+    fetchInitData();
   }, []);
 
   // Nếu ở chế độ Sửa, lấy dữ liệu bài viết cũ
@@ -61,6 +65,7 @@ const CreatePost = () => {
             setMetaDesc(data.metaDesc || '');
             setCanonicalUrl(data.canonicalUrl || '');
             setCustomSlug(data.slug || ''); // Slug hiện tại
+            setSelectedTagIds(data.tags?.map(t => t.id) || []);
           } else {
             alert('Không tìm thấy bài viết để sửa!');
             navigate(-1);
@@ -148,7 +153,8 @@ const CreatePost = () => {
           metaDesc,
           canonicalUrl,
           customSlug,
-          slug: customSlug // Cho update
+          slug: customSlug, // Cho update
+          tagIds: selectedTagIds
         })
       });
 
@@ -321,7 +327,38 @@ const CreatePost = () => {
 
               <div className="form-group-p mt-4">
                 <label>Thẻ (Tags)</label>
-                <input type="text" className="editor-input" placeholder="Ví dụ: Hội An, Cà Phê..." />
+                <div className="tag-selection-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }}>
+                  {tags.map(tag => {
+                    const isSelected = selectedTagIds.includes(tag.id);
+                    return (
+                      <span 
+                        key={tag.id}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedTagIds(selectedTagIds.filter(id => id !== tag.id));
+                          } else {
+                            setSelectedTagIds([...selectedTagIds, tag.id]);
+                          }
+                        }}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '20px',
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          border: '1px solid',
+                          borderColor: isSelected ? '#3182ce' : '#cbd5e0',
+                          backgroundColor: isSelected ? '#ebf8ff' : 'white',
+                          color: isSelected ? '#2b6cb0' : '#4a5568',
+                          transition: 'all 0.2s',
+                          userSelect: 'none'
+                        }}
+                      >
+                        {tag.name}
+                      </span>
+                    );
+                  })}
+                  {tags.length === 0 && <span style={{ color: '#a0aec0', fontSize: '0.9rem' }}>Chưa có thẻ nào được cấu hình.</span>}
+                </div>
               </div>
 
               <div className="form-group-p mt-4">

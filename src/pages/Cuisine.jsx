@@ -21,6 +21,16 @@ const Cuisine = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Tối ưu SEO cho trang Ẩm thực
+    document.title = "Ẩm thực - Hương vị truyền thống Việt Nam | Chân Đi Và Nếm";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = "Tìm hiểu các món ăn quốc hồn quốc túy, đặc sản ba miền, văn hóa cà phê độc đáo và tinh hoa ẩm thực truyền thống Việt Nam.";
+
     const fetchData = async () => {
       try {
         const [postsRes, catsRes] = await Promise.all([

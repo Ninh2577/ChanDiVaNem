@@ -1,7 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './NewsletterPage.css';
 
 const NewsletterPage = () => {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('http://localhost:5000/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Đăng ký nhận bản tin thành công! Cảm ơn bạn đã quan tâm.');
+        setEmail('');
+      } else {
+        alert(data.message || 'Đăng ký nhận bản tin thất bại.');
+      }
+    } catch (error) {
+      console.error('Lỗi đăng ký bản tin:', error);
+      alert('Không thể kết nối đến máy chủ Backend.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="newsletter-main-page">
       <div className="privacy-layout">
@@ -41,9 +74,18 @@ const NewsletterPage = () => {
               <h1>Gói ghém hồn Việt vào hộp thư của bạn.</h1>
               <p>Mỗi tháng một lần, chúng tôi gửi đi những câu chuyện chưa kể về làng nghề, công thức món xưa và những nẻo đường di sản ít người đặt chân đến.</p>
               
-              <form className="nl-form-box">
-                <input type="email" placeholder="Địa chỉ email của bạn" required />
-                <button type="submit">Đăng ký nhận bản tin →</button>
+              <form className="nl-form-box" onSubmit={handleSubmit}>
+                <input 
+                  type="email" 
+                  placeholder="Địa chỉ email của bạn" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required 
+                  disabled={isSubmitting}
+                />
+                <button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Đang gửi...' : 'Đăng ký nhận bản tin →'}
+                </button>
               </form>
               <p className="nl-disclaimer">Tham gia cùng 5.000+ người yêu văn hóa. Không spam, có thể hủy bất cứ lúc nào.</p>
             </div>

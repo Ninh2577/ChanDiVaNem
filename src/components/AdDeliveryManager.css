@@ -206,6 +206,13 @@
 
 /* Responsive */
 @media (max-width: 480px) {
+  .ad-popup-center-card {
+    max-width: calc(100% - 1rem);
+  }
+  .ad-popup-center-card .ad-card-banner-img {
+    max-height: 60vh;
+    object-fit: contain;
+  }
   .ad-popup-bottom-right-card {
     bottom: 12px;
     right: 12px;

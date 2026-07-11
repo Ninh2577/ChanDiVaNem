@@ -11,10 +11,32 @@ export const submitApplication = async (data) => {
   });
 };
 
-export const getApplications = async () => {
-  return await prisma.contributorApplication.findMany({
-    orderBy: { createdAt: 'desc' }
-  });
+export const getApplications = async ({ page = 1, limit = 10, status } = {}) => {
+  const skip = (Number(page) - 1) * Number(limit);
+  const where = {};
+  if (status && status !== 'all') {
+    where.status = status;
+  }
+
+  const [applications, total] = await Promise.all([
+    prisma.contributorApplication.findMany({
+      where,
+      skip,
+      take: Number(limit),
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.contributorApplication.count({ where })
+  ]);
+
+  return {
+    applications,
+    pagination: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / limit)
+    }
+  };
 };
 
 export const updateApplicationStatus = async (id, status) => {

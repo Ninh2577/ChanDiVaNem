@@ -7,8 +7,9 @@ export const submitApplication = catchAsync(async (req, res) => {
 });
 
 export const getApplications = catchAsync(async (req, res) => {
-  const applications = await applicationService.getApplications();
-  res.json(applications);
+  const { page, limit, status } = req.query;
+  const result = await applicationService.getApplications({ page, limit, status });
+  res.json(result);
 });
 
 export const updateApplicationStatus = catchAsync(async (req, res) => {

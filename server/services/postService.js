@@ -1,27 +1,50 @@
 import prisma from '../config/db.js';
 import AppError from '../utils/AppError.js';
+import DOMPurify from 'isomorphic-dompurify';
 
 const generateSlug = (title) => {
   return title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 };
 
-export const getAllPosts = async () => {
-  const posts = await prisma.post.findMany({
-    include: {
-      author: { select: { fullName: true } },
-      category: { select: { name: true } }
-    },
-    orderBy: { createdAt: 'desc' }
-  });
+export const getAllPosts = async ({ page = 1, limit = 10, status, categoryId, authorId } = {}) => {
+  const skip = (Number(page) - 1) * Number(limit);
+  const where = {};
+  if (status === 'published') where.isPublished = true;
+  if (status === 'unpublished' || status === 'pending') where.isPublished = false;
+  if (categoryId) where.categoryId = Number(categoryId);
+  if (authorId) where.authorId = Number(authorId);
+
+  const [posts, total] = await Promise.all([
+    prisma.post.findMany({
+      where,
+      skip,
+      take: Number(limit),
+      include: {
+        author: { select: { id: true, fullName: true } },
+        category: { select: { id: true, name: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.post.count({ where })
+  ]);
   
-  return posts.map(post => ({
-    id: post.id,
-    title: post.title,
-    author: post.author?.fullName || 'Khuyết danh',
-    category: post.category?.name || 'Không có',
-    status: post.isPublished ? 'published' : 'pending',
-    date: new Date(post.createdAt).toLocaleDateString('vi-VN')
-  }));
+  return {
+    posts: posts.map(post => ({
+      id: post.id,
+      title: post.title,
+      author: post.author?.fullName || 'Khuyết danh',
+      category: post.category?.name || 'Không có',
+      status: post.isPublished ? 'published' : 'pending',
+      date: new Date(post.createdAt).toLocaleDateString('vi-VN'),
+      isFeatured: post.isFeatured
+    })),
+    pagination: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / limit)
+    }
+  };
 };
 
 export const getPublishedPosts = async () => {
@@ -37,7 +60,10 @@ export const getPublishedPosts = async () => {
   return posts;
 };
 
-export const createPost = async ({ title, content, categoryId, authorId, imageUrl, metaTitle, metaDesc, canonicalUrl, thumbnailAlt, customSlug }) => {
+export const createPost = async (data, currentUser) => {
+  const { title, content, categoryId, imageUrl, metaTitle, metaDesc, canonicalUrl, thumbnailAlt, customSlug, tagIds, isPublished } = data;
+  const authorId = currentUser.id;
+
   if (!authorId) {
     throw new AppError('Bạn chưa đăng nhập.', 401);
   }
@@ -58,6 +84,11 @@ export const createPost = async ({ title, content, categoryId, authorId, imageUr
     validCategoryId = defaultCat.id;
   }
 
+  const cleanContent = DOMPurify.sanitize(content, {
+    ALLOWED_TAGS: ['p','br','strong','em','u','h1','h2','h3','h4','ul','ol','li','a','img','blockquote','code','pre','span'],
+    ALLOWED_ATTR: ['href','src','alt','class','target'],
+  });
+
   const decodeEntities = (html) => {
     return html.replace(/&nbsp;/g, ' ')
                .replace(/&amp;/g, '&')
@@ -66,23 +97,32 @@ export const createPost = async ({ title, content, categoryId, authorId, imageUr
                .replace(/&lt;/g, '<')
                .replace(/&gt;/g, '>');
   };
-  const rawText = content.replace(/<[^>]*>?/gm, '');
+  const rawText = cleanContent.replace(/<[^>]*>?/gm, '');
   const excerpt = decodeEntities(rawText).substring(0, 150) + '...';
+
+  // Chuyển đổi tagIds từ string/number sang number nguyên
+  const formattedTagIds = tagIds ? (Array.isArray(tagIds) ? tagIds.map(id => parseInt(id)) : [parseInt(tagIds)]) : [];
+
+  // CTV luôn tạo bài viết ở trạng thái chưa xuất bản (isPublished = false)
+  const isPostPublished = currentUser.role === 'ADMIN' ? (isPublished ?? false) : false;
 
   return await prisma.post.create({
     data: {
       title,
       slug,
-      content,
+      content: cleanContent,
       excerpt,
       imageUrl,
       thumbnailAlt,
       metaTitle,
       metaDesc,
       canonicalUrl,
-      isPublished: false,
+      isPublished: isPostPublished,
       authorId,
-      categoryId: validCategoryId
+      categoryId: validCategoryId,
+      tags: {
+        connect: formattedTagIds.map(id => ({ id }))
+      }
     }
   });
 };
@@ -114,6 +154,7 @@ export const getPostById = async (id) => {
     where: { id: parseInt(id) },
     include: {
       category: { select: { id: true, name: true } },
+      tags: { select: { id: true, name: true } }
     }
   });
 
@@ -124,9 +165,24 @@ export const getPostById = async (id) => {
   return post;
 };
 
-export const updatePost = async (id, data) => {
+export const updatePost = async (id, data, currentUser) => {
+  const post = await prisma.post.findUnique({ where: { id: parseInt(id) } });
+  if (!post) {
+    throw new AppError('Không tìm thấy bài viết', 404);
+  }
+
+  if (currentUser.role === 'CTV' && post.authorId !== currentUser.id) {
+    throw new AppError('Bạn không có quyền chỉnh sửa bài viết này', 403);
+  }
+
   let excerpt;
+  let cleanContent;
   if (data.content) {
+    cleanContent = DOMPurify.sanitize(data.content, {
+      ALLOWED_TAGS: ['p','br','strong','em','u','h1','h2','h3','h4','ul','ol','li','a','img','blockquote','code','pre','span'],
+      ALLOWED_ATTR: ['href','src','alt','class','target'],
+    });
+
     const decodeEntities = (html) => {
       return html.replace(/&nbsp;/g, ' ')
                  .replace(/&amp;/g, '&')
@@ -135,7 +191,7 @@ export const updatePost = async (id, data) => {
                  .replace(/&lt;/g, '<')
                  .replace(/&gt;/g, '>');
     };
-    const rawText = data.content.replace(/<[^>]*>?/gm, '');
+    const rawText = cleanContent.replace(/<[^>]*>?/gm, '');
     excerpt = decodeEntities(rawText).substring(0, 150) + '...';
   }
 
@@ -152,11 +208,17 @@ export const updatePost = async (id, data) => {
     }
   }
 
+  // Chuyển đổi tagIds từ string/number sang number nguyên
+  const formattedTagIds = data.tagIds ? (Array.isArray(data.tagIds) ? data.tagIds.map(id => parseInt(id)) : [parseInt(data.tagIds)]) : undefined;
+
+  // Chỉ Admin được cập nhật trạng thái isPublished
+  const isPostPublished = currentUser.role === 'ADMIN' ? (data.isPublished !== undefined ? data.isPublished : post.isPublished) : post.isPublished;
+
   return await prisma.post.update({
     where: { id: parseInt(id) },
     data: {
       ...(data.title && { title: data.title }),
-      ...(data.content && { content: data.content, excerpt }),
+      ...(data.content && { content: cleanContent, excerpt }),
       ...(data.categoryId && { categoryId: parseInt(data.categoryId) }),
       ...(data.imageUrl !== undefined && { imageUrl: data.imageUrl }),
       ...(data.thumbnailAlt !== undefined && { thumbnailAlt: data.thumbnailAlt }),
@@ -164,13 +226,27 @@ export const updatePost = async (id, data) => {
       ...(data.metaDesc !== undefined && { metaDesc: data.metaDesc }),
       ...(data.canonicalUrl !== undefined && { canonicalUrl: data.canonicalUrl }),
       ...(slug && { slug }),
-      ...(data.isPublished !== undefined && { isPublished: data.isPublished }),
+      isPublished: isPostPublished,
       ...(data.isFeatured !== undefined && { isFeatured: data.isFeatured }),
+      ...(formattedTagIds !== undefined && {
+        tags: {
+          set: formattedTagIds.map(id => ({ id }))
+        }
+      })
     }
   });
 };
 
-export const deletePost = async (id) => {
+export const deletePost = async (id, currentUser) => {
+  const post = await prisma.post.findUnique({ where: { id: parseInt(id) } });
+  if (!post) {
+    throw new AppError('Không tìm thấy bài viết', 404);
+  }
+
+  if (currentUser.role === 'CTV' && post.authorId !== currentUser.id) {
+    throw new AppError('Bạn không có quyền xóa bài viết này', 403);
+  }
+
   await prisma.post.delete({
     where: { id: parseInt(id) }
   });

@@ -19,6 +19,16 @@ const Contact = () => {
   const [data, setData] = useState(DEFAULT_CONTACT);
 
   useEffect(() => {
+    // Tối ưu SEO cho trang Liên hệ
+    document.title = "Liên hệ - Chân Đi Và Nếm | Chân Đi Và Nếm";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = "Kết nối với ban biên tập Chân Đi Và Nếm để chia sẻ câu chuyện, đóng góp bài viết hoặc hợp tác truyền thông phát triển văn hóa.";
+
     fetch(`${API}/api/site-content/page_contact`)
       .then(res => res.ok ? res.json() : null)
       .then(resData => {

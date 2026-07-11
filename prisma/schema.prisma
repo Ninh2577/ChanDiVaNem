@@ -24,6 +24,8 @@ model User {
   bio           String?   @db.Text
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
 
   // Quan hệ (Relations)
   posts         Post[]    // Bài viết tác giả (CTV/Admin) đã đăng
@@ -75,9 +77,9 @@ model Post {
 
   // Quan hệ
   authorId    Int
-  author      User     @relation(fields: [authorId], references: [id])
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
   categoryId  Int
-  category    Category @relation(fields: [categoryId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   tags        Tag[]
   comments    Comment[]
   ratings     Rating[]
@@ -92,9 +94,9 @@ model Comment {
 
   // Quan hệ với User và Post
   authorId    Int
-  author      User      @relation(fields: [authorId], references: [id])
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   postId      Int
-  post        Post      @relation(fields: [postId], references: [id])
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   // Bình luận lồng nhau (Nested/Reply)
   parentId    Int?
@@ -109,9 +111,9 @@ model Rating {
 
   // Quan hệ
   userId      Int
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   postId      Int
-  post        Post     @relation(fields: [postId], references: [id])
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   // Đảm bảo mỗi user chỉ được rate 1 bài 1 lần
   @@unique([userId, postId])

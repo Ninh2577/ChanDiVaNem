@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -17,20 +18,20 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    const randomName = crypto.randomBytes(16).toString('hex');
+    cb(null, randomName + path.extname(file.originalname).toLowerCase());
   }
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedFileTypes = /jpeg|jpg|png|webp|gif/;
-  const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedFileTypes.test(file.mimetype);
+  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+  const extname = /jpeg|jpg|png|webp|gif/.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = allowedMimeTypes.includes(file.mimetype);
 
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb(new Error('Chỉ cho phép tải lên hình ảnh!'));
+    cb(new Error('Chỉ chấp nhận file hình ảnh (JPEG, JPG, PNG, WEBP, GIF)!'), false);
   }
 };
 

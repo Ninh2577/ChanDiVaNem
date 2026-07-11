@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import applicationRoutes from './routes/applicationRoutes.js';
@@ -11,6 +12,8 @@ import siteContentRoutes from './routes/siteContentRoutes.js';
 import adRoutes from './routes/adRoutes.js';
 import commentRoutes from './routes/commentRoutes.js';
 import ratingRoutes from './routes/ratingRoutes.js';
+import tagRoutes from './routes/tagRoutes.js';
+import newsletterRoutes from './routes/newsletterRoutes.js';
 import { globalErrorHandler } from './middleware/errorMiddleware.js';
 import AppError from './utils/AppError.js';
 import path from 'path';
@@ -22,7 +25,19 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" } // Cho phép tải ảnh local uploads từ domain khác (Frontend)
+}));
+
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',')
+  : ['http://localhost:5173'];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // Phục vụ thư mục ảnh tĩnh
@@ -40,6 +55,8 @@ app.use('/api/site-content', siteContentRoutes);
 app.use('/api/ads', adRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/ratings', ratingRoutes);
+app.use('/api/tags', tagRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running smoothly' });

@@ -35,6 +35,9 @@ import AuthorProfile from './pages/AuthorProfile';
 import SavedPosts from './pages/SavedPosts';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AdDeliveryManager } from './components/AdDeliveryManager';
+import AdminTags from './pages/AdminTags';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 import './index.css';
 
@@ -76,6 +79,8 @@ const App = () => {
         {/* Authentication Route */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Admin Routes - No public Header/Footer */}
         <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
@@ -87,6 +92,7 @@ const App = () => {
             <Route path="users" element={<AdminUsers />} />
             <Route path="navigation" element={<AdminNavigation />} />
             <Route path="categories" element={<AdminCategories />} />
+            <Route path="tags" element={<AdminTags />} />
             <Route path="homepage" element={<AdminHomepage />} />
             <Route path="ads" element={<AdminAds />} />
           </Route>

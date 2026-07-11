@@ -1,0 +1,95 @@
+.tags-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 992px) {
+  .tags-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tags-list-card {
+  margin-top: 0 !important;
+}
+
+.tag-form-card {
+  height: fit-content;
+  position: sticky;
+  top: 24px;
+}
+
+.tag-form-card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 20px;
+}
+
+.tag-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tag-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tag-form label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.tag-form input {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.tag-form input:focus {
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+.tag-form .form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.tag-form button {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.tag-form .btn-primary {
+  background-color: #3182ce;
+  color: white;
+}
+
+.tag-form .btn-primary:hover {
+  background-color: #2b6cb0;
+}
+
+.tag-form .btn-secondary {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.tag-form .btn-secondary:hover {
+  background-color: #cbd5e0;
+}

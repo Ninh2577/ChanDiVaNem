@@ -2,8 +2,9 @@ import catchAsync from '../utils/catchAsync.js';
 import * as postService from '../services/postService.js';
 
 export const getPosts = catchAsync(async (req, res) => {
-  const posts = await postService.getAllPosts();
-  res.json(posts);
+  const { page, limit, status, categoryId, authorId } = req.query;
+  const result = await postService.getAllPosts({ page, limit, status, categoryId, authorId });
+  res.json(result);
 });
 
 export const getPublishedPosts = catchAsync(async (req, res) => {
@@ -12,14 +13,7 @@ export const getPublishedPosts = catchAsync(async (req, res) => {
 });
 
 export const createPost = catchAsync(async (req, res) => {
-  const { title, content, categoryId, imageUrl, metaTitle, metaDesc, canonicalUrl, thumbnailAlt, customSlug } = req.body;
-  const authorId = req.user.id;
-
-  const newPost = await postService.createPost({ 
-    title, content, categoryId, authorId, imageUrl, 
-    metaTitle, metaDesc, canonicalUrl, thumbnailAlt, customSlug 
-  });
-  
+  const newPost = await postService.createPost(req.body, req.user);
   res.status(201).json({ message: 'Tạo bài viết thành công!', post: newPost });
 });
 
@@ -37,14 +31,14 @@ export const getPostById = catchAsync(async (req, res) => {
 
 export const updatePost = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const updatedPost = await postService.updatePost(id, req.body);
+  const updatedPost = await postService.updatePost(id, req.body, req.user);
   
   res.json({ message: 'Cập nhật bài viết thành công', post: updatedPost });
 });
 
 export const deletePost = catchAsync(async (req, res) => {
   const { id } = req.params;
-  await postService.deletePost(id);
+  await postService.deletePost(id, req.user);
   res.json({ message: 'Xóa bài viết thành công' });
 });
 

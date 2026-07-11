@@ -24,6 +24,16 @@ const Blog = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Tối ưu SEO cho trang Tin tức / Blog
+    document.title = "Trang tin tức & Câu chuyện chia sẻ | Chân Đi Và Nếm";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = "Nơi tổng hợp các bài viết trải nghiệm du lịch, ẩm thực và văn hóa chất lượng cao từ đội ngũ biên tập viên và cộng tác viên.";
+
     const fetchData = async () => {
       try {
         const [postsRes, catsRes] = await Promise.all([

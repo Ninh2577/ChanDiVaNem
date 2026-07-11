@@ -22,6 +22,16 @@ const Destinations = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    // Tối ưu SEO cho trang Điểm Đến
+    document.title = "Điểm đến - Hành trình khám phá Việt Nam | Chân Đi Và Nếm";
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.name = 'description';
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.content = "Khám phá cẩm nang du lịch và câu chuyện di sản tại các địa danh nổi tiếng trải dài ba miền Bắc - Trung - Nam của đất nước hình chữ S.";
+
     const fetchData = async () => {
       try {
         const [postsRes, catsRes] = await Promise.all([

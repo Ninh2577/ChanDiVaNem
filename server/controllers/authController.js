@@ -22,3 +22,15 @@ export const login = catchAsync(async (req, res) => {
     ...data
   });
 });
+
+export const forgotPassword = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  await authService.forgotPassword(email);
+  res.json({ message: 'Email khôi phục mật khẩu đã được gửi.' });
+});
+
+export const resetPassword = catchAsync(async (req, res) => {
+  const { token, password } = req.body;
+  await authService.resetPassword(token, password);
+  res.json({ message: 'Đặt lại mật khẩu thành công.' });
+});
