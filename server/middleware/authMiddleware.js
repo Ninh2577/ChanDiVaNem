@@ -17,7 +17,7 @@ export const verifyToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch {
-    return next(new AppError('Token không hợp lệ hoặc đã hết hạn', 403));
+    return next(new AppError('Token không hợp lệ hoặc đã hết hạn', 401));
   }
 };
 

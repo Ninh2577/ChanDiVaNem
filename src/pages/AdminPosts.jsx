@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Pagination from '../components/Pagination';
 import './AdminTable.css';
 
 const AdminPosts = () => {
+  const [searchParams] = useSearchParams();
+  const categorySlug = searchParams.get('category') || '';
+
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,6 +59,19 @@ const AdminPosts = () => {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      if (categorySlug) {
+        const found = categories.find(c => c.slug === categorySlug);
+        if (found) {
+          setCategoryId(found.id.toString());
+        }
+      } else {
+        setCategoryId('');
+      }
+    }
+  }, [categorySlug, categories]);
 
   useEffect(() => {
     fetchPosts();

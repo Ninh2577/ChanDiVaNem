@@ -27,3 +27,14 @@ export const getAuthorProfile = catchAsync(async (req, res) => {
   const author = await userService.getAuthorProfile(id);
   res.json(author);
 });
+
+export const updateProfile = catchAsync(async (req, res) => {
+  const updatedUser = await userService.updateProfile(req.user.id, req.body);
+  res.json(updatedUser);
+});
+
+export const changePassword = catchAsync(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  await userService.changePassword(req.user.id, currentPassword, newPassword);
+  res.json({ message: 'Đổi mật khẩu thành công' });
+});

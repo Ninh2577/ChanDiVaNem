@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -28,6 +28,8 @@ import AdminNavigation from './pages/AdminNavigation';
 import AdminHomepage from './pages/AdminHomepage';
 import AdminCategories from './pages/AdminCategories';
 import AdminAds from './pages/AdminAds';
+import AdminSettings from './pages/AdminSettings';
+import AdminMedia from './pages/AdminMedia';
 import NotFound from './pages/NotFound';
 import SearchResults from './pages/SearchResults';
 import Archive from './pages/Archive';
@@ -95,6 +97,10 @@ const App = () => {
             <Route path="tags" element={<AdminTags />} />
             <Route path="homepage" element={<AdminHomepage />} />
             <Route path="ads" element={<AdminAds />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="media" element={<AdminMedia />} />
+            <Route path="destinations" element={<Navigate to="/admin/posts?category=diem-den" replace />} />
+            <Route path="cuisine" element={<Navigate to="/admin/posts?category=am-thuc" replace />} />
           </Route>
         </Route>
 

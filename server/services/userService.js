@@ -1,5 +1,39 @@
 import prisma from '../config/db.js';
 import AppError from '../utils/AppError.js';
+import bcrypt from 'bcrypt';
+
+export const updateProfile = async (id, data) => {
+  return await prisma.user.update({
+    where: { id: parseInt(id) },
+    data: {
+      fullName: data.fullName,
+      bio: data.bio,
+      avatarUrl: data.avatarUrl
+    },
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      role: true,
+      bio: true,
+      avatarUrl: true
+    }
+  });
+};
+
+export const changePassword = async (id, currentPassword, newPassword) => {
+  const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
+  if (!user) throw new AppError('Không tìm thấy người dùng', 404);
+
+  const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!isMatch) throw new AppError('Mật khẩu hiện tại không chính xác', 400);
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+  await prisma.user.update({
+    where: { id: parseInt(id) },
+    data: { passwordHash }
+  });
+};
 
 export const getUsers = async ({ page = 1, limit = 10, role } = {}) => {
   const skip = (Number(page) - 1) * Number(limit);

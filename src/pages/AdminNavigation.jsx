@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors,
 } from '@dnd-kit/core';
@@ -121,16 +122,24 @@ const InlineImageUpload = ({ value, onChange }) => {
 // ============================================================
 // FORM THÊM / SỬA một mục (dùng chung)
 // ============================================================
-const NavItemForm = ({ initial = {}, onSave, onCancel, isChild = false }) => {
+const NavItemForm = ({ initial = {}, onSave, onCancel, isChild = false, rootOptions = [] }) => {
   const [label, setLabel] = useState(initial.label || '');
   const [path, setPath] = useState(initial.path || '/');
   const [icon, setIcon] = useState(initial.icon || '');
   const [imageUrl, setImageUrl] = useState(initial.imageUrl || '');
   const [description, setDescription] = useState(initial.description || '');
+  const [parentId, setParentId] = useState(initial.parentId || '');
 
   const submit = () => {
     if (!label.trim() || !path.trim()) { alert('Cần có Tên và Đường dẫn!'); return; }
-    onSave({ label: label.trim(), path: path.trim(), icon, imageUrl, description });
+    onSave({ 
+      label: label.trim(), 
+      path: path.trim(), 
+      icon, 
+      imageUrl, 
+      description,
+      parentId: parentId ? parseInt(parentId) : null
+    });
   };
 
   return (
@@ -145,6 +154,20 @@ const NavItemForm = ({ initial = {}, onSave, onCancel, isChild = false }) => {
             <input className="nav-form-input nav-form-desc" placeholder="Mô tả ngắn..." value={description} onChange={e => setDescription(e.target.value)} />
           </>
         )}
+        {initial.id && (
+          <select 
+            className="nav-form-input nav-form-parent-select"
+            value={parentId}
+            onChange={e => setParentId(e.target.value)}
+            style={{ width: '130px', padding: '4px 8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+            title="Chọn chuyên mục cha (Cấp cha-con)"
+          >
+            <option value="">-- Cấp cao nhất --</option>
+            {rootOptions.filter(opt => opt.id !== initial.id).map(opt => (
+              <option key={opt.id} value={opt.id}>{opt.label}</option>
+            ))}
+          </select>
+        )}
         <button type="button" className="nav-btn nav-btn--save" onClick={submit} title="Lưu"><Check size={16} /></button>
         <button type="button" className="nav-btn nav-btn--cancel" onClick={onCancel} title="Hủy"><X size={16} /></button>
       </div>
@@ -155,8 +178,7 @@ const NavItemForm = ({ initial = {}, onSave, onCancel, isChild = false }) => {
 // ============================================================
 // SINGLE SORTABLE ITEM + ĐỆ QUY con
 // ============================================================
-const NavTreeItem = ({ item, depth = 0, onUpdate, onDelete, onAddChild, onReorder }) => {
-  const [expanded, setExpanded] = useState(true);
+const FlatTreeItem = ({ item, collapsedIds, setCollapsedIds, rootOptions, onUpdate, onDelete, onAddChild }) => {
   const [editing, setEditing] = useState(false);
   const [addingChild, setAddingChild] = useState(false);
 
@@ -170,25 +192,36 @@ const NavTreeItem = ({ item, depth = 0, onUpdate, onDelete, onAddChild, onReorde
   };
 
   const hasChildren = item.children && item.children.length > 0;
+  const isCollapsed = collapsedIds.has(item.id);
+
+  const toggleCollapse = () => {
+    const next = new Set(collapsedIds);
+    if (next.has(item.id)) {
+      next.delete(item.id);
+    } else {
+      next.add(item.id);
+    }
+    setCollapsedIds(next);
+  };
 
   return (
-    <div ref={setNodeRef} style={style} className={`nav-tree-item depth-${depth}`}>
+    <div ref={setNodeRef} style={style} className={`nav-tree-item depth-${item.depth}`}>
       {/* Row chính */}
       <div className={`nav-row ${!item.isActive ? 'nav-row--hidden' : ''} ${isDragging ? 'nav-row--dragging' : ''}`}>
         {/* Indent theo cấp */}
-        <div style={{ width: depth * 20, flexShrink: 0 }} />
+        <div style={{ width: item.depth * 24, flexShrink: 0 }} />
 
         {/* Toggle expand */}
         {hasChildren ? (
-          <button className="expand-btn" onClick={() => setExpanded(!expanded)}>
-            {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          <button type="button" className="expand-btn" onClick={toggleCollapse}>
+            {isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
           </button>
         ) : (
           <span className="expand-placeholder" />
         )}
 
         {/* Drag handle */}
-        <button className="drag-handle" {...attributes} {...listeners} title="Kéo để sắp xếp">
+        <button type="button" className="drag-handle" {...attributes} {...listeners} title="Kéo để sắp xếp và phân cấp">
           <GripVertical size={16} />
         </button>
 
@@ -199,7 +232,8 @@ const NavTreeItem = ({ item, depth = 0, onUpdate, onDelete, onAddChild, onReorde
         {editing ? (
           <NavItemForm
             initial={item}
-            isChild={depth > 0}
+            isChild={item.depth > 0}
+            rootOptions={rootOptions}
             onSave={(data) => { onUpdate(item.id, data); setEditing(false); }}
             onCancel={() => setEditing(false)}
           />
@@ -219,9 +253,11 @@ const NavTreeItem = ({ item, depth = 0, onUpdate, onDelete, onAddChild, onReorde
         {/* Actions */}
         {!editing && (
           <div className="nav-row-actions">
-            <button className="nav-btn" onClick={() => setAddingChild(!addingChild)} title="Thêm mục con">
-              <Plus size={15} />
-            </button>
+            {item.depth === 0 && (
+              <button className="nav-btn" onClick={() => setAddingChild(!addingChild)} title="Thêm mục con">
+                <Plus size={15} />
+              </button>
+            )}
             <button className="nav-btn" onClick={() => setEditing(true)} title="Chỉnh sửa">
               <Edit3 size={15} />
             </button>
@@ -250,60 +286,16 @@ const NavTreeItem = ({ item, depth = 0, onUpdate, onDelete, onAddChild, onReorde
 
       {/* Form thêm con */}
       {addingChild && (
-        <div style={{ paddingLeft: (depth + 1) * 20 + 64 }}>
+        <div style={{ paddingLeft: (item.depth + 1) * 24 + 64 }}>
           <NavItemForm
             isChild
-            onSave={(data) => { onAddChild(item.id, data); setAddingChild(false); setExpanded(true); }}
+            rootOptions={rootOptions}
+            onSave={(data) => { onAddChild(item.id, data); setAddingChild(false); }}
             onCancel={() => setAddingChild(false)}
           />
         </div>
       )}
-
-      {/* Children (DnD riêng cho cấp này) */}
-      {expanded && hasChildren && (
-        <ChildrenList
-          items={item.children}
-          depth={depth + 1}
-          parentId={item.id}
-          onUpdate={onUpdate}
-          onDelete={onDelete}
-          onAddChild={onAddChild}
-          onReorder={onReorder}
-        />
-      )}
     </div>
-  );
-};
-
-// DnD context bao quanh children cùng cấp
-const ChildrenList = ({ items, depth, parentId, onUpdate, onDelete, onAddChild, onReorder }) => {
-  const sensors = useSensors(useSensor(PointerSensor));
-
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = items.findIndex(i => i.id === active.id);
-    const newIndex = items.findIndex(i => i.id === over.id);
-    const reordered = arrayMove(items, oldIndex, newIndex);
-    onReorder(parentId, reordered.map(i => i.id));
-  };
-
-  return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-        {items.map(child => (
-          <NavTreeItem
-            key={child.id}
-            item={child}
-            depth={depth}
-            onUpdate={onUpdate}
-            onDelete={onDelete}
-            onAddChild={onAddChild}
-            onReorder={onReorder}
-          />
-        ))}
-      </SortableContext>
-    </DndContext>
   );
 };
 
@@ -311,9 +303,13 @@ const ChildrenList = ({ items, depth, parentId, onUpdate, onDelete, onAddChild, 
 // TRANG CHÍNH AdminNavigation
 // ============================================================
 const AdminNavigation = () => {
+  const location = useLocation();
+  const isCategoryView = location.pathname.includes('categories');
+
   const [tree, setTree] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addingRoot, setAddingRoot] = useState(false);
+  const [collapsedIds, setCollapsedIds] = useState(new Set());
 
   const token = localStorage.getItem('token');
 
@@ -353,26 +349,29 @@ const AdminNavigation = () => {
       ? { ...n, children: [...(n.children || []), child] }
       : { ...n, children: addChildLocal(n.children || [], parentId, child) }
     );
-
-  // Reorder children tại parentId (local state)
-  const reorderLocal = (nodes, parentId, orderedIds) =>
-    nodes.map(n => {
-      if (n.id === parentId) {
-        const sorted = orderedIds.map(id => n.children.find(c => c.id === id)).filter(Boolean);
-        return { ...n, children: sorted };
+  const getFlatItems = useCallback((nodes, depth = 0, parentId = null) => {
+    let list = [];
+    for (const node of nodes) {
+      list.push({ ...node, depth, parentId });
+      if (node.children && node.children.length > 0 && !collapsedIds.has(node.id)) {
+        list = list.concat(getFlatItems(node.children, depth + 1, node.id));
       }
-      return { ...n, children: reorderLocal(n.children || [], parentId, orderedIds) };
-    });
+    }
+    return list;
+  }, [collapsedIds]);
 
-  // Handlers gọi API + cập nhật local tree
+  const flatItems = getFlatItems(tree);
+
   const handleUpdate = async (id, data) => {
     try {
-      await fetch(`http://localhost:5000/api/navigation/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/navigation/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(data),
       });
-      setTree(prev => updateNode(prev, id, data));
+      if (res.ok) {
+        await fetchNav();
+      }
     } catch {
       alert('Lỗi cập nhật!');
     }
@@ -380,48 +379,30 @@ const AdminNavigation = () => {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/navigation/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/navigation/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setTree(prev => removeNode(prev, id));
+      if (res.ok) {
+        await fetchNav();
+      }
     } catch {
-      alert('Lỗi xóa!');
+      alert('Lỗi xóa mục!');
     }
   };
 
   const handleAddChild = async (parentId, data) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/navigation/${parentId}/children`, {
+      const res = await fetch('http://localhost:5000/api/navigation/child', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, parentId }),
       });
       if (res.ok) {
-        const newItem = await res.json();
-        setTree(prev => addChildLocal(prev, parentId, { ...newItem, children: [] }));
+        await fetchNav();
       }
     } catch {
       alert('Lỗi thêm mục con!');
-    }
-  };
-
-  const handleReorder = async (parentId, orderedIds) => {
-    // Cập nhật local trước, rồi gửi API
-    if (parentId === 'root') {
-      const sorted = orderedIds.map(id => tree.find(n => n.id === id)).filter(Boolean);
-      setTree(sorted);
-    } else {
-      setTree(prev => reorderLocal(prev, parentId, orderedIds));
-    }
-    try {
-      await fetch('http://localhost:5000/api/navigation/reorder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ orderedIds }),
-      });
-    } catch {
-      console.warn('Không thể lưu thứ tự menu.');
     }
   };
 
@@ -433,25 +414,91 @@ const AdminNavigation = () => {
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        const newItem = await res.json();
-        setTree(prev => [...prev, { ...newItem, children: [] }]);
         setAddingRoot(false);
+        await fetchNav();
       }
     } catch {
       alert('Lỗi thêm mục!');
     }
   };
 
-  // DnD cho cấp gốc (root level)
   const rootSensors = useSensors(useSensor(PointerSensor));
-  const handleRootDragEnd = (event) => {
+
+  const handleFlatDragEnd = async (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const oldIndex = tree.findIndex(i => i.id === active.id);
-    const newIndex = tree.findIndex(i => i.id === over.id);
-    const reordered = arrayMove(tree, oldIndex, newIndex);
-    handleReorder('root', reordered.map(i => i.id));
-    setTree(reordered);
+
+    const oldIndex = flatItems.findIndex(i => i.id === active.id);
+    const newIndex = flatItems.findIndex(i => i.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const reorderedFlat = arrayMove(flatItems, oldIndex, newIndex);
+    const activeItem = flatItems[oldIndex];
+    
+    let newParentId = null;
+    if (newIndex > 0) {
+      const itemAbove = reorderedFlat[newIndex - 1];
+      if (itemAbove.depth === 0) {
+        if (itemAbove.children?.length > 0 || itemAbove.label === 'Chuyên Mục') {
+          newParentId = itemAbove.id;
+        } else {
+          newParentId = null;
+        }
+      } else {
+        newParentId = itemAbove.parentId;
+      }
+    } else {
+      newParentId = null;
+    }
+
+    try {
+      if (activeItem.parentId !== newParentId) {
+        await fetch(`http://localhost:5000/api/navigation/${activeItem.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ parentId: newParentId }),
+        });
+      }
+
+      const updatedFlat = reorderedFlat.map(item => {
+        if (item.id === activeItem.id) return { ...item, parentId: newParentId };
+        return item;
+      });
+
+      const groups = {};
+      updatedFlat.forEach(item => {
+        const key = item.parentId || 'root';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item.id);
+      });
+
+      const reorderPromises = [];
+      const newPKey = newParentId || 'root';
+      reorderPromises.push(
+        fetch('http://localhost:5000/api/navigation/reorder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ orderedIds: groups[newPKey] }),
+        })
+      );
+
+      const oldPKey = activeItem.parentId || 'root';
+      if (oldPKey !== newPKey && groups[oldPKey]) {
+        reorderPromises.push(
+          fetch('http://localhost:5000/api/navigation/reorder', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ orderedIds: groups[oldPKey] }),
+          })
+        );
+      }
+
+      await Promise.all(reorderPromises);
+      await fetchNav();
+    } catch (e) {
+      console.error('Lỗi kéo thả:', e);
+      alert('Có lỗi xảy ra khi kéo thả!');
+    }
   };
 
   const totalActive = (nodes) =>
@@ -466,9 +513,9 @@ const AdminNavigation = () => {
       <div className="admin-page-header">
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Layout size={22} /> Quản Lý Menu Điều Hướng
+            <Layout size={22} /> {isCategoryView ? 'Quản Lý Chuyên Mục & Menu' : 'Quản Lý Menu Điều Hướng'}
           </h1>
-          <p>Kéo-thả để sắp xếp thứ tự. Bấm [+] để thêm mục con bất kỳ cấp nào.</p>
+          <p>{isCategoryView ? 'Kéo-thả để thay đổi thứ tự và phân cấp các chuyên mục trên thanh điều hướng.' : 'Kéo-thả để sắp xếp thứ tự. Bấm [+] để thêm mục con bất kỳ cấp nào.'}</p>
         </div>
         <button className="btn-outline" onClick={() => setAddingRoot(!addingRoot)}>
           <Plus size={18} /> Thêm mục gốc
@@ -491,7 +538,7 @@ const AdminNavigation = () => {
             Cây menu ({totalAll(tree)} mục · {totalActive(tree)} đang hiển thị)
           </h3>
           <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
-            ⠿ Kéo-thả sắp xếp trong cùng cấp &nbsp;·&nbsp; [+] Thêm con &nbsp;·&nbsp; ✏️ Sửa &nbsp;·&nbsp; 👁 Ẩn/Hiện
+            ⠿ Kéo-thả sắp xếp và phân cấp tự do &nbsp;·&nbsp; [+] Thêm con &nbsp;·&nbsp; ✏️ Sửa &nbsp;·&nbsp; 👁 Ẩn/Hiện
           </p>
         </div>
 
@@ -504,17 +551,18 @@ const AdminNavigation = () => {
         </div>
 
         <div className="admin-card-body" style={{ padding: '0.5rem 1rem 1.5rem' }}>
-          <DndContext sensors={rootSensors} collisionDetection={closestCenter} onDragEnd={handleRootDragEnd}>
-            <SortableContext items={tree.map(i => i.id)} strategy={verticalListSortingStrategy}>
-              {tree.map(item => (
-                <NavTreeItem
+          <DndContext sensors={rootSensors} collisionDetection={closestCenter} onDragEnd={handleFlatDragEnd}>
+            <SortableContext items={flatItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
+              {flatItems.map(item => (
+                <FlatTreeItem
                   key={item.id}
                   item={item}
-                  depth={0}
+                  collapsedIds={collapsedIds}
+                  setCollapsedIds={setCollapsedIds}
+                  rootOptions={tree.map(n => ({ id: n.id, label: n.label }))}
                   onUpdate={handleUpdate}
                   onDelete={handleDelete}
                   onAddChild={handleAddChild}
-                  onReorder={handleReorder}
                 />
               ))}
             </SortableContext>

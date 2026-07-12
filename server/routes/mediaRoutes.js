@@ -3,12 +3,12 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import { verifyToken } from '../middleware/authMiddleware.js';
-import * as mediaService from '../services/mediaService.js';
+import { verifyToken, verifyAdmin } from '../middleware/authMiddleware.js';
+import { uploadMedia, getMedia, deleteMedia } from '../controllers/mediaController.js';
 
 const router = express.Router();
 
-// Tạo thư mục uploads nếu chưa có
+// Tạo thư mục tạm uploads nếu chưa có
 const uploadDir = path.join(process.cwd(), 'server', 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -38,24 +38,15 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Giới hạn 5MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: fileFilter
 });
 
-// Route POST /api/upload - Đồng bộ qua Media Service
-router.post('/', verifyToken, upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'Vui lòng chọn một file ảnh.' });
-    }
-    
-    // Gọi mediaService để upload và lưu DB
-    const media = await mediaService.uploadFile(req.file);
-    res.status(200).json({ imageUrl: media.url });
-  } catch (error) {
-    console.error('Lỗi upload ảnh:', error);
-    res.status(500).json({ message: 'Lỗi server khi upload ảnh.' });
-  }
-});
+// Tải lên ảnh (Mọi người dùng có quyền đăng nhập như CTV/Admin đều làm được)
+router.post('/upload', verifyToken, upload.single('image'), uploadMedia);
+
+// Quản trị Thư viện Ảnh (Admin Only)
+router.get('/', verifyToken, verifyAdmin, getMedia);
+router.delete('/:id', verifyToken, verifyAdmin, deleteMedia);
 
 export default router;

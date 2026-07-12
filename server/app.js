@@ -14,6 +14,7 @@ import commentRoutes from './routes/commentRoutes.js';
 import ratingRoutes from './routes/ratingRoutes.js';
 import tagRoutes from './routes/tagRoutes.js';
 import newsletterRoutes from './routes/newsletterRoutes.js';
+import mediaRoutes from './routes/mediaRoutes.js';
 import { globalErrorHandler } from './middleware/errorMiddleware.js';
 import AppError from './utils/AppError.js';
 import path from 'path';
@@ -29,9 +30,16 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" } // Cho phép tải ảnh local uploads từ domain khác (Frontend)
 }));
 
-const allowedOrigins = process.env.CLIENT_URL
-  ? process.env.CLIENT_URL.split(',')
-  : ['http://localhost:5173'];
+const clientUrlOrigins = process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : [];
+const allowedOrigins = [
+  ...clientUrlOrigins,
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'http://127.0.0.1:5175'
+];
 
 app.use(cors({
   origin: allowedOrigins,
@@ -57,6 +65,7 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/ratings', ratingRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/media', mediaRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running smoothly' });

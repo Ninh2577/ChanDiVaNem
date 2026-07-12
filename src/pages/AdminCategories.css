@@ -5,6 +5,10 @@
   align-items: start;
 }
 
+.category-layout.list-only {
+  grid-template-columns: 1fr;
+}
+
 .category-form-card {
   position: sticky;
   top: 1rem;

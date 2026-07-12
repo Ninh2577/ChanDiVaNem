@@ -182,3 +182,13 @@ model AdCampaign {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+model Media {
+  id        Int      @id @default(autoincrement())
+  filename  String   // Tên file gốc hoặc tên ngẫu nhiên
+  url       String   @db.Text // Đường dẫn URL công khai (Local path hoặc Cloudinary CDN URL)
+  publicId  String?  // ID định danh trên Cloudinary để xóa từ xa
+  mimeType  String   // Định dạng (image/png, image/jpeg...)
+  size      Int      // Dung lượng (bytes)
+  createdAt DateTime @default(now())
+}
