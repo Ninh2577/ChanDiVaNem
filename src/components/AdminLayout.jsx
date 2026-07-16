@@ -25,7 +25,7 @@ const AdminLayout = () => {
             <Users size={20} /> Người dùng
           </NavLink>
           <NavLink to="/admin/categories" className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}>
-            <Layout size={20} /> Chuyên mục
+            <Layout size={20} /> Danh mục
           </NavLink>
           
           <p className="admin-nav-title">NỘI DUNG</p>

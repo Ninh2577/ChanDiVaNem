@@ -4,6 +4,12 @@ import './AdDeliveryManager.css';
 
 const API = 'http://localhost:5000';
 
+const getAdImgSrc = (imageUrl) => {
+  if (!imageUrl) return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  if (imageUrl.startsWith('http')) return imageUrl;
+  return `${API}${imageUrl}`;
+};
+
 // ============================================================
 // COMPONENT CHÍNH QUẢN LÝ POPUP TOÀN SITE
 // ============================================================
@@ -85,7 +91,7 @@ export const AdDeliveryManager = () => {
             <X size={18} />
           </button>
           <img 
-            src={`${API}${currentPopup.imageUrl}`} 
+            src={getAdImgSrc(currentPopup.imageUrl)} 
             alt={currentPopup.title} 
             className="ad-card-banner-img"
             onClick={handleAdClick}
@@ -102,7 +108,7 @@ export const AdDeliveryManager = () => {
           <X size={16} />
         </button>
         <img 
-          src={`${API}${currentPopup.imageUrl}`} 
+          src={getAdImgSrc(currentPopup.imageUrl)} 
           alt={currentPopup.title} 
           className="ad-card-banner-img"
           onClick={handleAdClick}
@@ -171,7 +177,7 @@ export const AdBanner = ({ position }) => {
             <X size={14} />
           </button>
           <div className="static-ad-banner-link" onClick={handleAdClick} style={{ cursor: 'pointer' }}>
-            <img src={`${API}${ad.imageUrl}`} alt={ad.title} />
+            <img src={getAdImgSrc(ad.imageUrl)} alt={ad.title} />
           </div>
         </div>
       </div>
@@ -185,7 +191,7 @@ export const AdBanner = ({ position }) => {
           <X size={14} />
         </button>
         <img 
-          src={`${API}${ad.imageUrl}`} 
+          src={getAdImgSrc(ad.imageUrl)} 
           alt={ad.title} 
           className="sidebar-ad-banner-img"
           onClick={handleAdClick}

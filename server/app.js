@@ -50,6 +50,8 @@ app.use(express.json());
 
 // Phục vụ thư mục ảnh tĩnh
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/public', express.static(path.join(__dirname, '..', 'public')));
+app.use('/brain', express.static('C:\\Users\\hoang\\.gemini\\antigravity-ide\\brain'));
 
 // Routes
 app.use('/api/auth', authRoutes);

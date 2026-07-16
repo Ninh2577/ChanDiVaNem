@@ -15,8 +15,11 @@ const decodeHtmlEntities = (str) => {
 };
 
 // Lấy URL ảnh: nếu có imageUrl riêng dùng imageUrl, không thì dùng fallback
-const imgSrc = (item) =>
-  item?.imageUrl ? `${API}${item.imageUrl}` : (item?.imageFallback || '');
+const imgSrc = (item) => {
+  if (!item?.imageUrl) return item?.imageFallback || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  if (item.imageUrl.startsWith('http')) return item.imageUrl;
+  return `${API}${item.imageUrl}`;
+};
 
 // Default content — fallback khi API chưa sẵn sàng
 const DEFAULT = {
@@ -156,7 +159,7 @@ const Home = () => {
             <img
               src={imgSrc(about)}
               alt={about.imageAlt || 'Ảnh giới thiệu'}
-              onError={e => { e.target.src = about.imageFallback || ''; }}
+              onError={e => { e.target.src = about.imageFallback || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; }}
             />
             {/* Overlay text chỉ hiện khi hover — không hiển thị khi ảnh bình thường */}
             {about.quoteText && (
@@ -245,7 +248,7 @@ const Home = () => {
                 <div className="culture-card" key={post.id}>
                   <div className="culture-img">
                     <img
-                      src={post.imageUrl ? `${API}${post.imageUrl}` : 'https://images.unsplash.com/photo-1600007283728-22aba3e1d6d8?auto=format&fit=crop&q=80'}
+                      src={imgSrc(post)}
                       alt={post.title}
                     />
                   </div>

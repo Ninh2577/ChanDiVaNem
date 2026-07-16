@@ -1,20 +1,38 @@
 import prisma from '../config/db.js';
 
 export const getAdCampaigns = async () => {
-  return await prisma.adCampaign.findMany({
+  const campaigns = await prisma.adCampaign.findMany({
     orderBy: { createdAt: 'desc' }
+  });
+  return campaigns.map(c => {
+    if (c.imageUrl === '/uploads/ads/northwest_travel.jpg') {
+      return { ...c, imageUrl: '/public/images/taybac.png' };
+    }
+    if (c.imageUrl === '/uploads/ads/gift_viet.jpg') {
+      return { ...c, imageUrl: '/public/images/taxua.png' };
+    }
+    return c;
   });
 };
 
 export const getActiveAdCampaigns = async () => {
   const now = new Date();
-  return await prisma.adCampaign.findMany({
+  const campaigns = await prisma.adCampaign.findMany({
     where: {
       isActive: true,
       startDate: { lte: now },
       endDate: { gte: now }
     },
     orderBy: { createdAt: 'desc' }
+  });
+  return campaigns.map(c => {
+    if (c.imageUrl === '/uploads/ads/northwest_travel.jpg') {
+      return { ...c, imageUrl: '/public/images/taybac.png' };
+    }
+    if (c.imageUrl === '/uploads/ads/gift_viet.jpg') {
+      return { ...c, imageUrl: '/public/images/taxua.png' };
+    }
+    return c;
   });
 };
 
